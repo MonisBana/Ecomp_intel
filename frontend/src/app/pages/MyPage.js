@@ -20,22 +20,24 @@ export class MyPage extends Component {
   };
   componentDidMount() {
     axios
-      .get("/populateBrand/")
+      .post("/populateBrand/")
       .then((res) => {
         const brands = res.data;
+        console.log(brands)
         this.setState({ brands });
       })
       .catch((error) => console.log(error.response));
-  }
-  brandHandler = (eventKey, event) => {
-    console.log(eventKey);
-    this.setState({ selectedBrand: eventKey });
+
     axios
-      .post("/populateL1/", JSON.stringify({ brand: eventKey }))
+      .post("/populateL1/")
       .then((res) => {
         const L1s = res.data;
         this.setState({ L1s });
       });
+  }
+  brandHandler = (eventKey, event) => {
+    console.log(eventKey);
+    this.setState({ selectedBrand: eventKey });
   };
 
   L1Handler = (eventKey, event) => {

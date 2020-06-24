@@ -2,37 +2,45 @@ from django.shortcuts import HttpResponse
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 @csrf_exempt
+@api_view(['POST'])
 def populateBrand(request):
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT brand FROM digi1.digi1_product;
+    SELECT DISTINCT brand FROM digi1_product;
     """
     cur.execute(query)
     results = cur.fetchall()
+    cur.close()
     # final_data = []
     # for row in results:
     #     final_data.append(row[0])
-    return HttpResponse(json.dumps(results))
+    return Response(results)
+
 
 
 @csrf_exempt
+@api_view(['POST'])
 def populateL1(request):
-    data = json.loads(request.body)
-    brand = data["brand"]
+    # data = json.loads(request.body)
+    # brand = data["brand"]
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT L1 FROM digi1.digi1_product WHERE brand = '%s';
-    """ % (brand)
+    SELECT DISTINCT L1 FROM digi1.digi1_product;
+    """
     cur.execute(query)
     results = cur.fetchall()
     final_data = []
+    cur.close()
     for row in results:
         final_data.append(row[0])
-
-    return HttpResponse(json.dumps(final_data))
+    print("FINAL -> ",final_data)
+    return Response(final_data)
 
 
 @csrf_exempt
@@ -48,6 +56,7 @@ def populateL2(request):
     cur.execute(query)
     results = cur.fetchall()
     final_data = []
+    cur.close()
     for row in results:
         final_data.append(row[0])
 
@@ -68,6 +77,7 @@ def populateL3(request):
 
     results = cur.fetchall()
     final_data = []
+    cur.close()
     for row in results:
         final_data.append(row[0])
 
@@ -125,6 +135,7 @@ FROM
 
     cur.execute(query)
     result = cur.fetchall()
+    cur.close()
     row_headers = [x[0] for x in cur.description]
     cur.close()
     json_data = []
