@@ -17,9 +17,6 @@ def populateBrand(request):
     cur.execute(query)
     results = cur.fetchall()
     cur.close()
-    # final_data = []
-    # for row in results:
-    #     final_data.append(row[0])
     return Response(results)
 
 
@@ -31,16 +28,12 @@ def populateL1(request):
     # brand = data["brand"]
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT L1 FROM digi1.digi1_product;
+    SELECT DISTINCT L1 FROM digi1.digi1_product where L1 is not null ;
     """
     cur.execute(query)
     results = cur.fetchall()
-    final_data = []
     cur.close()
-    for row in results:
-        final_data.append(row[0])
-    print("FINAL -> ",final_data)
-    return Response(final_data)
+    return Response(results)
 
 
 @csrf_exempt
@@ -51,16 +44,12 @@ def populateL2(request):
     L1 = data["L1"]
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT L2 FROM digi1.digi1_product where brand = '%s' and L1 = '%s';
-    """ % (brand, L1)
+    SELECT DISTINCT L2 FROM digi1.digi1_product where L1 = '%s' and L2 is not null;
+    """ % (L1)
     cur.execute(query)
     results = cur.fetchall()
-    final_data = []
     cur.close()
-    for row in results:
-        final_data.append(row[0])
-
-    return HttpResponse(json.dumps(final_data))  # json to string
+    return HttpResponse(json.dumps(results))  # json to string
 
 
 @csrf_exempt
@@ -71,17 +60,14 @@ def populateL3(request):
     L2 = data['L2']
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT L3 FROM digi1.digi1_product where brand = '%s' and L1 = '%s' and L2 = '%s';
-    """ % (brand, L1, L2)
+    SELECT DISTINCT L3 FROM digi1.digi1_product where L1 = '%s' and L2 = '%s' and L3 is not null;
+    """ % (L1, L2)
     cur.execute(query)
 
     results = cur.fetchall()
-    final_data = []
     cur.close()
-    for row in results:
-        final_data.append(row[0])
 
-    return HttpResponse(json.dumps(final_data))  # json to string
+    return HttpResponse(json.dumps(results))  # json to string
 
 
 @csrf_exempt
@@ -95,42 +81,42 @@ def populateResult(request):
     print("date", date)
     cur = connection.cursor()
     query = """
-SELECT 
-    dp.sku_id,
-    (SELECT 
-            amz.price
+        SELECT 
+            dp.sku_id,
+            (SELECT 
+                    amz.price
+                FROM
+                    ecomp_intel.amazon_price amz
+                WHERE
+                    amz.asin = dp.asin AND amz.dt = '%s') amz_price,
+            (SELECT 
+                    fkt.price
+                FROM
+                    ecomp_intel.fkt_price fkt
+                WHERE
+                    fkt.fid = dp.fid AND fkt.dt = '%s') fkt_price,
+            (SELECT 
+                    cr.price
+                FROM
+                    ecomp_intel.croma_price cr
+                WHERE
+                    cr.sku_id = dp.sku_id AND cr.dt = '%s') cr_price,
+            (SELECT 
+                    rd.price
+                FROM
+                    ecomp_intel.rd_price rd
+                WHERE
+                    rd.rid = dp.rid AND rd.dt = '%s') rd_price,
+            (SELECT 
+                    sd.price
+                FROM
+                    ecomp_intel.sd_price sd
+                WHERE
+                    sd.supc = dp.sid AND sd.dt = '%s') sd_price        
         FROM
-            ecomp_intel.amazon_price amz
-        WHERE
-            amz.asin = dp.asin AND amz.dt = '%s') amz_price,
-    (SELECT 
-            fkt.price
-        FROM
-            ecomp_intel.fkt_price fkt
-        WHERE
-            fkt.fid = dp.fid AND fkt.dt = '%s') fkt_price,
-    (SELECT 
-            cr.price
-        FROM
-            ecomp_intel.croma_price cr
-        WHERE
-            cr.sku_id = dp.sku_id AND cr.dt = '%s') cr_price,
-    (SELECT 
-            rd.price
-        FROM
-            ecomp_intel.rd_price rd
-        WHERE
-            rd.rid = dp.rid AND rd.dt = '%s') rd_price,
-    (SELECT 
-            sd.price
-        FROM
-            ecomp_intel.sd_price sd
-        WHERE
-            sd.supc = dp.sid AND sd.dt = '%s') sd_price        
-FROM
-    digi1.digi1_product dp
-    
-    where dp.Brand='%s' and dp.L1='%s' and dp.L2='%s' and dp.L3='%s';
+            digi1.digi1_product dp
+            
+            where dp.Brand='%s' and dp.L1='%s' and dp.L2='%s' and dp.L3='%s';
     """ % (date, date, date, date, date, brand, L1, L2, L3)
 
     cur.execute(query)

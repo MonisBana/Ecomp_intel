@@ -1,18 +1,18 @@
-import {toAbsoluteUrl} from "../../_helpers";
+import { toAbsoluteUrl } from "../../_helpers";
 export function getInitLayoutConfig() {
   return {
-    demo: "demo1",
-    js: {
-      breakpoints : {
-        sm: "576",
-        md: "768",
-        lg: "992",
-        xl: "1200",
-        xxl: "1200"
+    "demo": "demo1",
+    "js": {
+      "breakpoints": {
+        "sm": "576",
+        "md": "768",
+        "lg": "992",
+        "xl": "1200",
+        "xxl": "1200"
       },
-      colors: {
-        theme: {
-          base: {
+      "colors": {
+        "theme": {
+          "base": {
             "white": "#ffffff",
             "primary": "#6993FF",
             "secondary": "#E5EAEE",
@@ -23,7 +23,7 @@ export function getInitLayoutConfig() {
             "light": "#F3F6F9",
             "dark": "#212121"
           },
-          light: {
+          "light": {
             "white": "#ffffff",
             "primary": "#E1E9FF",
             "secondary": "#ECF0F3",
@@ -34,7 +34,7 @@ export function getInitLayoutConfig() {
             "light": "#F3F6F9",
             "dark": "#D6D6E0"
           },
-          inverse: {
+          "inverse": {
             "white": "#ffffff",
             "primary": "#ffffff",
             "secondary": "#212121",
@@ -46,7 +46,7 @@ export function getInitLayoutConfig() {
             "dark": "#ffffff"
           }
         },
-        gray: {
+        "gray": {
           "gray100": "#F3F6F9",
           "gray200": "#ECF0F3",
           "gray300": "#E5EAEE",
@@ -58,165 +58,163 @@ export function getInitLayoutConfig() {
           "gray900": "#212121"
         }
       },
-      fontFamily: "Poppins"
+      "fontFamily": "Poppins"
     },
-    // == Page Splash Screen loading
-    loader: {
-      enabled: true,
-      type: "", // default|spinner-message|spinner-logo
-      logo: toAbsoluteUrl("/media/logos/logo-dark-sm.png"),
-      message: "Please wait..."
+    "loader": {
+      "enabled": true,
+      "type": "",
+      "logo": "/metronic/preview/react/demo1/media/logos/logo-dark-sm.png",
+      "message": "Please wait..."
     },
-    // page toolbar
-    toolbar: {
-      display: true
+    "toolbar": {
+      "display": true
     },
-    header: {
-      self: {
-        width: "fluid", // fixed|fluid
-        theme: "light", // light|dark
-        fixed: {
-          desktop: true,
-          mobile: true
+    "header": {
+      "self": {
+        "width": "fluid",
+        "theme": "light",
+        "fixed": {
+          "desktop": true,
+          "mobile": false
         }
       },
-      menu: {
-        self: {
-          display: true,
-          layout: "default", // tab/default
+      "menu": {
+        "self": {
+          "display": true,
+          "layout": "default",
           "root-arrow": false,
-          "icon-style": "duotone" // duotone, line, bold, solid
+          "icon-style": "duotone"
         },
-        desktop: {
-          arrow: true,
-          toggle: "click",
-          submenu: {
-            theme: "light", // light|dark
-            arrow: true
+        "desktop": {
+          "arrow": true,
+          "toggle": "click",
+          "submenu": {
+            "theme": "light",
+            "arrow": true
           }
         },
-        mobile: {
-          submenu: {
-            theme: "dark",
-            accordion: true
-          }
-        }
-      }
-    },
-    subheader: {
-      display: true,
-      displayDesc: false,
-      displayDaterangepicker: true,
-      layout: "subheader-v1",
-      fixed: true,
-      width: "fluid", // fixed/fluid,
-      clear: false,
-      style: "solid" // solid/transparent
-    },
-    content: {
-      width: "fixed" // fluid|fixed
-    },
-    brand: {
-      self: {
-        theme: "dark" // light/dark
-      }
-    },
-    aside: {
-      self: {
-        theme: "dark", // light/dark
-        display: true,
-        fixed: true,
-        minimize: {
-          toggle: true, // allow toggle
-          default: false, // default state
-          hoverable: true // allow hover
-        }
-      },
-      footer: {
-        self: {
-          display: true
-        }
-      },
-      menu: {
-        dropdown: false, // ok
-        scroll: true, // ok
-        "icon-style": "duotone", // duotone, line, bold, solid
-        submenu: {
-          accordion: true,
-          dropdown: {
-            arrow: true,
-            "hover-timeout": 500 // in milliseconds
+        "mobile": {
+          "submenu": {
+            "theme": "dark",
+            "accordion": true
           }
         }
       }
     },
-    footer: {
-      self: {
-        fixed: true,
-        width: "fluid"
+    "subheader": {
+      "display": false,
+      "displayDesc": false,
+      "displayDaterangepicker": true,
+      "layout": "subheader-v1",
+      "fixed": true,
+      "width": "fluid",
+      "clear": false,
+      "style": "solid"
+    },
+    "content": {
+      "width": "fixed"
+    },
+    "brand": {
+      "self": {
+        "theme": "dark"
       }
     },
-    extras: {
-      search: {
-        display: true,
-        layout: "dropdown", // offcanvas, dropdown
-        offcanvas: {
-          direction: "right"
+    "aside": {
+      "self": {
+        "theme": "dark",
+        "display": true,
+        "fixed": true,
+        "minimize": {
+          "toggle": true,
+          "default": false,
+          "hoverable": true
         }
       },
-      notifications: {
-        display: true,
-        layout: "dropdown", // offcanvas, dropdown
-        dropdown: {
-          style: "dark" // light, dark
+      "footer": {
+        "self": {
+          "display": true
+        }
+      },
+      "menu": {
+        "dropdown": false,
+        "scroll": true,
+        "icon-style": "duotone",
+        "submenu": {
+          "accordion": true,
+          "dropdown": {
+            "arrow": true,
+            "hover-timeout": 500
+          }
+        }
+      }
+    },
+    "footer": {
+      "self": {
+        "fixed": true,
+        "width": "fluid"
+      }
+    },
+    "extras": {
+      "search": {
+        "display": true,
+        "layout": "dropdown",
+        "offcanvas": {
+          "direction": "right"
+        }
+      },
+      "notifications": {
+        "display": true,
+        "layout": "dropdown",
+        "dropdown": {
+          "style": "dark"
         },
-        offcanvas: {
-          directions: "right"
+        "offcanvas": {
+          "directions": "right"
         }
       },
       "quick-actions": {
-        display: true,
-        layout: "dropdown", // offcanvas, dropdown,
-        dropdown: {
-          style: "dark", // light, dark
+        "display": true,
+        "layout": "dropdown",
+        "dropdown": {
+          "style": "dark"
         },
-        offcanvas: {
-          directions: "right"
+        "offcanvas": {
+          "directions": "right"
         }
       },
-      user: {
-        display: true,
-        layout: "offcanvas", // offcanvas, dropdown
-        dropdown: {
-          style: "dark"
+      "user": {
+        "display": true,
+        "layout": "offcanvas",
+        "dropdown": {
+          "style": "dark"
         },
-        offcanvas: {
-          directions: "right"
+        "offcanvas": {
+          "directions": "right"
         }
       },
-      languages: {
-        display: true
+      "languages": {
+        "display": true
       },
-      cart: {
-        display: true,
-        dropdown: {
-          style: "dark", // ligth, dark
+      "cart": {
+        "display": true,
+        "dropdown": {
+          "style": "dark"
         }
       },
       "quick-panel": {
-        display: true,
-        offcanvas: {
-          directions: "right"
+        "display": true,
+        "offcanvas": {
+          "directions": "right"
         }
       },
-      chat: {
-        display: true
+      "chat": {
+        "display": true
       },
-      toolbar: {
-        display: true
+      "toolbar": {
+        "display": true
       },
-      scrolltop: {
-        display: true
+      "scrolltop": {
+        "display": true
       }
     }
   };
