@@ -46,7 +46,13 @@ const columns = [
     sortable: true,
   },
 ];
-
+const customStyles = {
+  cells: {
+    style: {
+      fontFamily: "Poppins",
+    },
+  },
+};
 export class MyPage extends Component {
   getCurDate(sp) {
     var today = new Date();
@@ -160,6 +166,7 @@ export class MyPage extends Component {
           title="Price report"
           columns={columns}
           data={this.state.res}
+          customStyles={customStyles}
         />
       );
     }
