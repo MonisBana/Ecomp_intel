@@ -79,7 +79,7 @@ export class MyPage extends Component {
       L3s: [],
       selectedL3: null,
       date: new Date(),
-      res: null,
+      res: [],
     };
   }
 
@@ -159,7 +159,7 @@ export class MyPage extends Component {
   render() {
     // const suhbeader = useSubheader();
     // suhbeader.setTitle("My Custom title");
-    let table = null;
+    let table = [];
     if (this.state.res) {
       table = (
         <DataTable
