@@ -84,44 +84,8 @@ def populateResult(request):
     date = data["date"]
     print("date", date)
     cur = connection.cursor()
-    query = """
-SELECT 
-    dp.sku_id,
-    (SELECT 
-            amz.price
-        FROM
-            ecomp_intel.amazon_price amz
-        WHERE
-            amz.asin = dp.asin AND amz.dt = '%s') amz_price,
-    (SELECT 
-            fkt.price
-        FROM
-            ecomp_intel.fkt_price fkt
-        WHERE
-            fkt.fid = dp.fid AND fkt.dt = '%s') fkt_price,
-    (SELECT 
-            cr.price
-        FROM
-            ecomp_intel.croma_price cr
-        WHERE
-            cr.sku_id = dp.sku_id AND cr.dt = '%s') cr_price,
-    (SELECT 
-            rd.price
-        FROM
-            ecomp_intel.rd_price rd
-        WHERE
-            rd.rid = dp.rid AND rd.dt = '%s') rd_price,
-    (SELECT 
-            sd.price
-        FROM
-            ecomp_intel.sd_price sd
-        WHERE
-            sd.supc = dp.sid AND sd.dt = '%s') sd_price        
-FROM
-    digi1.digi1_product dp
-    
-    where dp.Brand='%s' and dp.L1='%s' and dp.L2='%s' and dp.L3='%s';
-    """ % (date, date, date, date, date, brand, L1, L2, L3)
+    query = "call ecomp_intel.get_results('%s', '%s', '%s', '%s','%s');" % (
+        date, brand, L1, L2, L3)
 
     cur.execute(query)
     result = cur.fetchall()
