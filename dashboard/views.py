@@ -12,7 +12,7 @@ from rest_framework.response import Response
 def populateBrand(request):
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT brand FROM digi1_product;
+    SELECT DISTINCT brand FROM digi1.digi1_product;
     """
     cur.execute(query)
     results = cur.fetchall()

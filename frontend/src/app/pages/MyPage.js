@@ -85,7 +85,7 @@ export class MyPage extends Component {
 
   componentDidMount() {
     axios
-      .get("/populateBrand/")
+      .post("/populateBrand/")
       .then((res) => {
         const brands = res.data;
         this.setState({ brands });
@@ -140,6 +140,7 @@ export class MyPage extends Component {
     this.setState({ selectedL3: eventKey });
   };
   getResultHandler = () => {
+    this.setState({ res: null });
     const date = this.state.date;
     const formattedDate = `${date.getFullYear()}-${date.getMonth() +
       1}-${date.getDate()}`;
