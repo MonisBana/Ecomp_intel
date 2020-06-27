@@ -33,14 +33,14 @@ export function AsideMenuList({ layoutProps }) {
 
         {/*begin::1 Level*/}
         <li
-          className={`menu-item ${getMenuItemActive("/my-page")}`}
+          className={`menu-item ${getMenuItemActive("/comp_price")}`}
           aria-haspopup="true"
         >
-          <NavLink className="menu-link" to="/my-page">
+          <NavLink className="menu-link" to="/comp_price">
             <span className="svg-icon menu-icon">
               <SVG src={toAbsoluteUrl("/media/svg/icons/Design/Layers.svg")} />
             </span>
-            <span className="menu-text">My Page</span>
+            <span className="menu-text">Price Report</span>
           </NavLink>
         </li>
         {/*end::1 Level*/}
