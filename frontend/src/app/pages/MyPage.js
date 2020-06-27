@@ -9,6 +9,7 @@ import axios from "../../axios-order";
 import DatePicker from "react-datepicker";
 import classes from "./MyPage.module.css";
 import DataTable from "react-data-table-component";
+import LinearIndeterminate from "../Component/LinearProgress";
 
 const columns = [
   {
@@ -131,6 +132,7 @@ export class MyPage extends Component {
       selectedL3: null,
       date: new Date(),
       res: [],
+      pending: false,
     };
   }
 
@@ -191,7 +193,7 @@ export class MyPage extends Component {
     this.setState({ selectedL3: eventKey });
   };
   getResultHandler = () => {
-    this.setState({ res: null });
+    this.setState({ res: [], pending: true });
     const date = this.state.date;
     const formattedDate = `${date.getFullYear()}-${date.getMonth() +
       1}-${date.getDate()}`;
@@ -204,7 +206,7 @@ export class MyPage extends Component {
     });
     axios.post("/populateResult/", data).then((res) => {
       console.log(res.data);
-      this.setState({ res: res.data });
+      this.setState({ res: res.data, pending: false });
     });
   };
 
@@ -227,6 +229,9 @@ export class MyPage extends Component {
           highlightOnHover
           pointerOnHover
           actions={actionsMemo}
+          progressPending={this.state.pending}
+          progressComponent={<LinearIndeterminate />}
+          persistTableHead
         />
       );
     }
