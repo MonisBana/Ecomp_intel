@@ -45,6 +45,11 @@ const columns = [
     selector: "tc_price",
     sortable: true,
   },
+  {
+    name: "Paytm Mall",
+    selector: "pp_price",
+    sortable: true,
+  },
 ];
 const customStyles = {
   cells: {
@@ -53,7 +58,53 @@ const customStyles = {
     },
   },
 };
+
 export class MyPage extends Component {
+  convertArrayOfObjectsToCSV(array) {
+    let result;
+
+    const columnDelimiter = ",";
+    const lineDelimiter = "\n";
+    const keys = Object.keys(this.state.res[0]);
+
+    result = "";
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+
+    array.forEach((item) => {
+      let ctr = 0;
+      keys.forEach((key) => {
+        if (ctr > 0) result += columnDelimiter;
+        if (item[key] == null) item[key] = "";
+        result += item[key];
+
+        ctr++;
+      });
+      result += lineDelimiter;
+    });
+
+    return result;
+  }
+
+  downloadCSV(array) {
+    const link = document.createElement("a");
+    let csv = this.convertArrayOfObjectsToCSV(array);
+    if (csv == null) return;
+
+    const filename = "export.csv";
+
+    if (!csv.match(/^data:text\/csv/i)) {
+      csv = `data:text/csv;charset=utf-8,${csv}`;
+    }
+
+    link.setAttribute("href", encodeURI(csv));
+    link.setAttribute("download", filename);
+    link.click();
+  }
+
+  Export = ({ onExport }) => (
+    <Button onClick={(e) => onExport(e.target.value)}>Export</Button>
+  );
   getCurDate(sp) {
     var today = new Date();
     var dd = today.getDate();
@@ -79,7 +130,7 @@ export class MyPage extends Component {
       L3s: [],
       selectedL3: null,
       date: new Date(),
-      res: null,
+      res: [],
     };
   }
 
@@ -156,10 +207,14 @@ export class MyPage extends Component {
       this.setState({ res: res.data });
     });
   };
+
   render() {
     // const suhbeader = useSubheader();
     // suhbeader.setTitle("My Custom title");
-    let table = null;
+    const actionsMemo = (
+      <this.Export onExport={() => this.downloadCSV(this.state.res)} />
+    );
+    let table = [];
     if (this.state.res) {
       table = (
         <DataTable
@@ -168,6 +223,10 @@ export class MyPage extends Component {
           columns={columns}
           data={this.state.res}
           customStyles={customStyles}
+          pagination
+          highlightOnHover
+          pointerOnHover
+          actions={actionsMemo}
         />
       );
     }
