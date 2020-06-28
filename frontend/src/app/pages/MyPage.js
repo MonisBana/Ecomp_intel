@@ -133,6 +133,7 @@ export class MyPage extends Component {
       date: new Date(),
       res: [],
       pending: false,
+      Oos: null,
     };
   }
 
@@ -209,10 +210,13 @@ export class MyPage extends Component {
       this.setState({ res: res.data, pending: false });
     });
   };
-
+  OutOfStockHandler = (eventKey, event) => {
+    this.setState({ Oos: eventKey });
+  };
   render() {
     // const suhbeader = useSubheader();
     // suhbeader.setTitle("My Custom title");
+    const outOfStock = ["Include Out of Stock", "Not Include Out of Stock"];
     const actionsMemo = (
       <this.Export onExport={() => this.downloadCSV(this.state.res)} />
     );
@@ -313,6 +317,23 @@ export class MyPage extends Component {
               {this.state.L3s.map((L3, index) => (
                 <option key={index} value={L3}>
                   {L3}
+                </option>
+              ))}
+            </Form.Control>
+          </div>
+          <div className="col-lg-2">
+            <Form.Label>Out of Stock</Form.Label>
+            <Form.Control
+              onChange={this.OutOfStockHandler}
+              className="custom-select"
+              as="select"
+            >
+              <option key="-1" value="0">
+                Out of Stock
+              </option>
+              {outOfStock.map((Oos, index) => (
+                <option key={index} value={Oos}>
+                  {Oos}
                 </option>
               ))}
             </Form.Control>
