@@ -3,7 +3,7 @@ import React, { Component, Fragment } from "react";
 import { Button } from "react-bootstrap";
 // import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
-import { Form } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
 
 import axios from "../../axios-order";
 import DatePicker from "react-datepicker";
@@ -17,39 +17,130 @@ const columns = [
     selector: "sku_id",
   },
   {
-    name: "Amazon",
-    selector: "amz_price",
+    name: "Digi 1",
+    selector: "digip",
     sortable: true,
+  },
+  {
+    name: "Amazon",
+    selector: "amazonp",
+    sortable: true,
+    conditionalCellStyles: [
+      {
+        when: (row) => row.amazonp == row.Lowescast,
+        style: {
+          color: "#F64E60",
+          backgroundColor: "#FFE2E5",
+          fontWeight: 400,
+          width: "30%",
+          padding: "0.9rem 0.75rem",
+          height: "24px",
+          fontSize: "0.9rem",
+          borderRadius: "0.42rem",
+          flexGrow: 0,
+          minWidth: "60px",
+          margin: "10px 95px 5px 5px",
+        },
+      },
+    ],
   },
   {
     name: "Flipkart",
-    selector: "fkt_price",
+    selector: "flipkartp",
     sortable: true,
-  },
-  {
-    name: "Croma",
-    selector: "cr_price",
-    sortable: true,
+    conditionalCellStyles: [
+      {
+        when: (row) => row.flipkartp == row.Lowescast,
+        style: {
+          color: "#F64E60",
+          backgroundColor: "#FFE2E5",
+          fontWeight: 400,
+          width: "30%",
+          padding: "0.9rem 0.75rem",
+          height: "24px",
+          fontSize: "0.9rem",
+          borderRadius: "0.42rem",
+          flexGrow: 0,
+          minWidth: "60px",
+          margin: "10px 95px 5px 5px",
+        },
+      },
+    ],
   },
   {
     name: "Reilance Digital",
-    selector: "rd_price",
+    selector: "reliancep",
     sortable: true,
-  },
-  {
-    name: "Snapdeal",
-    selector: "sd_price",
-    sortable: true,
+    conditionalCellStyles: [
+      {
+        when: (row) => row.reliancep == row.Lowescast,
+        style: {
+          color: "#F64E60",
+          backgroundColor: "#FFE2E5",
+          fontWeight: 400,
+          width: "30%",
+          padding: "0.9rem 0.75rem",
+          height: "24px",
+          fontSize: "0.9rem",
+          borderRadius: "0.42rem",
+          flexGrow: 0,
+          minWidth: "60px",
+          margin: "10px 95px 5px 5px",
+        },
+      },
+    ],
   },
   {
     name: "Tata Cliq",
-    selector: "tc_price",
+    selector: "tatap",
     sortable: true,
+    conditionalCellStyles: [
+      {
+        when: (row) => row.tatap == row.Lowescast,
+        style: {
+          color: "#F64E60",
+          backgroundColor: "#FFE2E5",
+          fontWeight: 400,
+          width: "30%",
+          padding: "0.9rem 0.75rem",
+          height: "24px",
+          fontSize: "0.9rem",
+          borderRadius: "0.42rem",
+          flexGrow: 0,
+          minWidth: "60px",
+          margin: "10px 95px 5px 5px",
+        },
+      },
+    ],
   },
   {
     name: "Paytm Mall",
-    selector: "pp_price",
+    selector: "paytmp",
     sortable: true,
+    conditionalCellStyles: [
+      {
+        when: (row) => row.paytmp == row.Lowescast,
+        style: {
+          color: "#F64E60",
+          backgroundColor: "#FFE2E5",
+          justifyContent: "center",
+          fontWeight: 400,
+          width: "30%",
+          padding: "0.9rem 0.75rem",
+          height: "24px",
+          fontSize: "0.9rem",
+          borderRadius: "0.42rem",
+          flexGrow: 0,
+          minWidth: "60px",
+          margin: "10px 95px 5px 5px",
+        },
+      },
+    ],
+  },
+  {
+    name: "Lowest Price",
+    selector: "Lowescast",
+    omit: true,
   },
 ];
 const customStyles = {
@@ -123,17 +214,19 @@ export class MyPage extends Component {
 
     this.state = {
       brands: [],
-      selectedBrand: null,
+      selectedBrand: "0",
       L1s: [],
-      selectedL1: null,
+      selectedL1: "0",
       L2s: [],
-      selectedL2: null,
+      selectedL2: "0",
       L3s: [],
-      selectedL3: null,
+      selectedL3: "0",
       date: new Date(),
       res: [],
       pending: false,
-      Oos: null,
+      Oos: "0",
+      LLimit: null,
+      ULimit: null,
     };
   }
 
@@ -155,10 +248,9 @@ export class MyPage extends Component {
   brandHandler = (event) => {
     this.setState({ selectedBrand: event.target.value });
   };
-
-  L1Handler = (eventKey, event) => {
-    console.log(eventKey);
-    this.setState({ selectedL1: eventKey });
+  L1Handler = (event) => {
+    console.log(event.target.value);
+    this.setState({ selectedL1: event.target.value });
     axios
       .post(
         "/populateL2/",
@@ -174,8 +266,8 @@ export class MyPage extends Component {
       });
   };
 
-  L2Handler = (eventKey, event) => {
-    this.setState({ selectedL2: eventKey });
+  L2Handler = (event) => {
+    this.setState({ selectedL2: event.target.value });
     axios
       .post(
         "/populateL3/",
@@ -190,12 +282,17 @@ export class MyPage extends Component {
         this.setState({ L3s });
       });
   };
-  L3Handler = (eventKey, event) => {
-    this.setState({ selectedL3: eventKey });
-  };
   getResultHandler = () => {
     this.setState({ res: [], pending: true });
     const date = this.state.date;
+    let Llimit = this.state.LLimit;
+    let Ulimit = this.state.ULimit;
+    if (Llimit == null) {
+      Llimit = 0;
+    }
+    if (Ulimit == null) {
+      Ulimit = 0;
+    }
     const formattedDate = `${date.getFullYear()}-${date.getMonth() +
       1}-${date.getDate()}`;
     const data = JSON.stringify({
@@ -203,6 +300,9 @@ export class MyPage extends Component {
       L1: this.state.selectedL1,
       L2: this.state.selectedL2,
       L3: this.state.selectedL3,
+      Oos: this.state.Oos,
+      Llimit: Llimit,
+      Ulimit: Ulimit,
       date: formattedDate,
     });
     axios.post("/populateResult/", data).then((res) => {
@@ -210,8 +310,15 @@ export class MyPage extends Component {
       this.setState({ res: res.data, pending: false });
     });
   };
-  OutOfStockHandler = (eventKey, event) => {
-    this.setState({ Oos: eventKey });
+  OutOfStockHandler = (event) => {
+    console.log(event.target);
+    this.setState({ Oos: event.target.selectedIndex - 1 });
+  };
+  LLimitHandler = (event) => {
+    this.setState({ LLimit: event.target.value.replace(/\D/, "") });
+  };
+  ULimitHandler = (event) => {
+    this.setState({ ULimit: event.target.value.replace(/\D/, "") });
   };
   render() {
     // const suhbeader = useSubheader();
@@ -338,6 +445,30 @@ export class MyPage extends Component {
               ))}
             </Form.Control>
           </div>
+          <InputGroup className="col-lg-2" style={{ marginTop: "2rem" }}>
+            <InputGroup.Prepend>
+              <InputGroup.Text id="basic-addon1">
+                <i className="fa fa-inr" aria-hidden="true"></i>
+              </InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Control
+              onChange={this.LLimitHandler}
+              value={this.state.LLimit}
+              placeholder="Price lower limit"
+            />
+          </InputGroup>
+          <InputGroup className="col-lg-2" style={{ marginTop: "2rem" }}>
+            <InputGroup.Prepend>
+              <InputGroup.Text id="basic-addon1">
+                <i className="fa fa-inr" aria-hidden="true"></i>
+              </InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Control
+              onChange={this.ULimitHandler}
+              value={this.state.ULimit}
+              placeholder="Price upper limit"
+            />
+          </InputGroup>
           <div className="col-lg-2">
             <Button
               style={{ marginTop: "2rem" }}

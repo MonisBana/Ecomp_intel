@@ -77,11 +77,14 @@ def populateResult(request):
     L2 = data["L2"]
     L3 = data["L3"]
     date = data["date"]
-    print("date", date)
-    cur = connection.cursor()
-    query = "call ecomp_intel.get_results('%s', '%s', '%s', '%s','%s');" % (
-        date, brand, L1, L2, L3)
+    Llimit = data["Llimit"]
+    Ulimit = data["Ulimit"]
+    Oos = data["Oos"]
 
+    cur = connection.cursor()
+    query = "call ecomp_intel.get_current_prices('%s', '%s', '%s', '%s','%s', '%s', '%s','%s');" % (
+        brand, L1, L2, L3, date, Llimit, Ulimit, Oos)
+    print("query", query)
     cur.execute(query)
     result = cur.fetchall()
     row_headers = [x[0] for x in cur.description]
