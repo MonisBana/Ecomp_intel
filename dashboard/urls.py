@@ -8,4 +8,6 @@ urlpatterns = [
     path('populateL2/', views.populateL2),
     path('populateL3/', views.populateL3),
     path('populateResult/', views.populateResult),
+    path('priceHistory/', views.priceHistory),
+    path('priceTrendHistory/', views.priceTrendHistory),
 ]

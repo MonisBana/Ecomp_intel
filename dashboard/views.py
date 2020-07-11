@@ -2,9 +2,14 @@ from django.shortcuts import HttpResponse
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 @csrf_exempt
+@api_view(['POST'])
 def populateBrand(request):
     cur = connection.cursor()
     query = """
@@ -12,27 +17,23 @@ def populateBrand(request):
     """
     cur.execute(query)
     results = cur.fetchall()
-    # final_data = []
-    # for row in results:
-    #     final_data.append(row[0])
-    return HttpResponse(json.dumps(results))
+    cur.close()
+    return Response(results)
 
 
 @csrf_exempt
+@api_view(['POST'])
 def populateL1(request):
-    data = json.loads(request.body)
-    brand = data["brand"]
+    # data = json.loads(request.body)
+    # brand = data["brand"]
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT L1 FROM digi1.digi1_product WHERE brand = '%s';
-    """ % (brand)
+    SELECT DISTINCT L1 FROM digi1.digi1_product where L1 is not null ;
+    """
     cur.execute(query)
     results = cur.fetchall()
-    final_data = []
-    for row in results:
-        final_data.append(row[0])
-
-    return HttpResponse(json.dumps(final_data))
+    cur.close()
+    return Response(results)
 
 
 @csrf_exempt
@@ -43,15 +44,12 @@ def populateL2(request):
     L1 = data["L1"]
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT L2 FROM digi1.digi1_product where brand = '%s' and L1 = '%s';
-    """ % (brand, L1)
+    SELECT DISTINCT L2 FROM digi1.digi1_product where L1 = '%s' and L2 is not null;
+    """ % (L1)
     cur.execute(query)
     results = cur.fetchall()
-    final_data = []
-    for row in results:
-        final_data.append(row[0])
-
-    return HttpResponse(json.dumps(final_data))  # json to string
+    cur.close()
+    return HttpResponse(json.dumps(results))  # json to string
 
 
 @csrf_exempt
@@ -62,16 +60,14 @@ def populateL3(request):
     L2 = data['L2']
     cur = connection.cursor()
     query = """
-    SELECT DISTINCT L3 FROM digi1.digi1_product where brand = '%s' and L1 = '%s' and L2 = '%s';
-    """ % (brand, L1, L2)
+    SELECT DISTINCT L3 FROM digi1.digi1_product where L1 = '%s' and L2 = '%s' and L3 is not null;
+    """ % (L1, L2)
     cur.execute(query)
 
     results = cur.fetchall()
-    final_data = []
-    for row in results:
-        final_data.append(row[0])
+    cur.close()
 
-    return HttpResponse(json.dumps(final_data))  # json to string
+    return HttpResponse(json.dumps(results))  # json to string
 
 
 @csrf_exempt
@@ -82,47 +78,14 @@ def populateResult(request):
     L2 = data["L2"]
     L3 = data["L3"]
     date = data["date"]
-    print("date", date)
-    cur = connection.cursor()
-    query = """
-SELECT 
-    dp.sku_id,
-    (SELECT 
-            amz.price
-        FROM
-            ecomp_intel.amazon_price amz
-        WHERE
-            amz.asin = dp.asin AND amz.dt = '%s') amz_price,
-    (SELECT 
-            fkt.price
-        FROM
-            ecomp_intel.fkt_price fkt
-        WHERE
-            fkt.fid = dp.fid AND fkt.dt = '%s') fkt_price,
-    (SELECT 
-            cr.price
-        FROM
-            ecomp_intel.croma_price cr
-        WHERE
-            cr.sku_id = dp.sku_id AND cr.dt = '%s') cr_price,
-    (SELECT 
-            rd.price
-        FROM
-            ecomp_intel.rd_price rd
-        WHERE
-            rd.rid = dp.rid AND rd.dt = '%s') rd_price,
-    (SELECT 
-            sd.price
-        FROM
-            ecomp_intel.sd_price sd
-        WHERE
-            sd.supc = dp.sid AND sd.dt = '%s') sd_price        
-FROM
-    digi1.digi1_product dp
-    
-    where dp.Brand='%s' and dp.L1='%s' and dp.L2='%s' and dp.L3='%s';
-    """ % (date, date, date, date, date, brand, L1, L2, L3)
+    Llimit = data["Llimit"]
+    Ulimit = data["Ulimit"]
+    Oos = data["Oos"]
 
+    cur = connection.cursor()
+    query = "call ecomp_intel.get_current_prices('%s', '%s', '%s', '%s','%s', '%s', '%s','%s');" % (
+        brand, L1, L2, L3, date, Llimit, Ulimit, Oos)
+    print("query", query)
     cur.execute(query)
     result = cur.fetchall()
     row_headers = [x[0] for x in cur.description]
@@ -132,6 +95,45 @@ FROM
         json_data.append(dict(zip(row_headers, row)))
 
     return HttpResponse(json.dumps(json_data))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def priceHistory(request):
+    data = json.loads(request.body)
+    comp_name = data["comp_name"]
+    sku_id = data["sku_id"]
+    cur = connection.cursor()
+    query = "call ecomp_intel.price_history('%s', '%s');" % (comp_name, sku_id)
+    cur.execute(query)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def priceTrendHistory(request):
+    data = json.loads(request.body)
+    sku_id = data["sku_id"]
+    cur = connection.cursor()
+    query = "call ecomp_intel.price_trend_history('%s');" % (sku_id)
+    print(query)
+    cur.execute(query)
+    result = cur.fetchall()
+    print(result)
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
 
 
 '''
