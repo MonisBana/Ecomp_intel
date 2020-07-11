@@ -1,15 +1,19 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 //import { useSubheader } from "../../_metronic/layout";
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 // import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
-
 import { Form, InputGroup } from "react-bootstrap";
-
-import axios from "../../axios-order";
+import { getCurrentPrice } from "../../redux/actions/action";
+import { connect } from "react-redux";
+import axios from "../../axios-base";
 import DatePicker from "react-datepicker";
 import classes from "./MyPage.module.css";
 import DataTable from "react-data-table-component";
-import LinearIndeterminate from "../Component/LinearProgress";
+import LinearIndeterminate from "../Component/LinearProgress/LinearProgress";
+import { NavLink } from "react-router-dom";
+import * as types from "../../redux/types/type";
+import Modal from "../Component/Modal/Modal";
+import TrendChart from "../Component/TrendChart/TrendChart";
 
 const columns = [
   {
@@ -17,14 +21,41 @@ const columns = [
     selector: "sku_id",
   },
   {
+    name: "Name",
+    selector: "title",
+    wrap: true,
+    format: (row) => `${row.title.slice(0, 75)}...`,
+  },
+  {
+    name: "Brand",
+    selector: "brand",
+  },
+
+  {
     name: "Digi 1",
     selector: "digip",
     sortable: true,
+    cell: (row) => (
+      <a href={row.digi_url} target="_blank" className={classes.notActive}>
+        <p>{row.digip}</p>
+      </a>
+    ),
+  },
+  {
+    name: "Thumbnail",
+    cell: (row) => (
+      <img height="80px" width="80px" alt={row.name} src={row.digi_img} />
+    ),
   },
   {
     name: "Amazon",
     selector: "amazonp",
     sortable: true,
+    cell: (row) => (
+      <NavLink to={"PriceHistory/amazon/" + row.sku_id}>
+        <p>{row.amazonp}</p>
+      </NavLink>
+    ),
     conditionalCellStyles: [
       {
         when: (row) => row.amazonp == row.Lowescast,
@@ -39,7 +70,7 @@ const columns = [
           borderRadius: "0.42rem",
           flexGrow: 0,
           minWidth: "60px",
-          margin: "10px 95px 5px 5px",
+          margin: "10px 80px 5px 5px",
         },
       },
     ],
@@ -48,22 +79,15 @@ const columns = [
     name: "Flipkart",
     selector: "flipkartp",
     sortable: true,
+    cell: (row) => (
+      <NavLink to={"PriceHistory/flipkart/" + row.sku_id}>
+        <p>{row.flipkartp}</p>
+      </NavLink>
+    ),
     conditionalCellStyles: [
       {
         when: (row) => row.flipkartp == row.Lowescast,
-        style: {
-          color: "#F64E60",
-          backgroundColor: "#FFE2E5",
-          fontWeight: 400,
-          width: "30%",
-          padding: "0.9rem 0.75rem",
-          height: "24px",
-          fontSize: "0.9rem",
-          borderRadius: "0.42rem",
-          flexGrow: 0,
-          minWidth: "60px",
-          margin: "10px 95px 5px 5px",
-        },
+        style: classes.lowestSeller,
       },
     ],
   },
@@ -71,6 +95,11 @@ const columns = [
     name: "Reilance Digital",
     selector: "reliancep",
     sortable: true,
+    cell: (row) => (
+      <NavLink to={"PriceHistory/reliance/" + row.sku_id}>
+        <p>{row.reliancep}</p>
+      </NavLink>
+    ),
     conditionalCellStyles: [
       {
         when: (row) => row.reliancep == row.Lowescast,
@@ -85,7 +114,7 @@ const columns = [
           borderRadius: "0.42rem",
           flexGrow: 0,
           minWidth: "60px",
-          margin: "10px 95px 5px 5px",
+          margin: "10px 80px 5px 5px",
         },
       },
     ],
@@ -94,6 +123,11 @@ const columns = [
     name: "Tata Cliq",
     selector: "tatap",
     sortable: true,
+    cell: (row) => (
+      <NavLink to={"PriceHistory/tatacliq/" + row.sku_id}>
+        <p>{row.tatap}</p>
+      </NavLink>
+    ),
     conditionalCellStyles: [
       {
         when: (row) => row.tatap == row.Lowescast,
@@ -108,7 +142,7 @@ const columns = [
           borderRadius: "0.42rem",
           flexGrow: 0,
           minWidth: "60px",
-          margin: "10px 95px 5px 5px",
+          margin: "10px 80px 5px 5px",
         },
       },
     ],
@@ -117,23 +151,15 @@ const columns = [
     name: "Paytm Mall",
     selector: "paytmp",
     sortable: true,
+    cell: (row) => (
+      <NavLink to={"PriceHistory/paytm/" + row.sku_id}>
+        <p>{row.paytmp}</p>
+      </NavLink>
+    ),
     conditionalCellStyles: [
       {
         when: (row) => row.paytmp == row.Lowescast,
-        style: {
-          color: "#F64E60",
-          backgroundColor: "#FFE2E5",
-          justifyContent: "center",
-          fontWeight: 400,
-          width: "30%",
-          padding: "0.9rem 0.75rem",
-          height: "24px",
-          fontSize: "0.9rem",
-          borderRadius: "0.42rem",
-          flexGrow: 0,
-          minWidth: "60px",
-          margin: "10px 95px 5px 5px",
-        },
+        style: classes.lowestSeller,
       },
     ],
   },
@@ -149,15 +175,38 @@ const customStyles = {
       fontFamily: "Poppins",
     },
   },
+  headCells: {
+    style: {
+      fontWeight: "600",
+      color: "#b5b5c3 !important",
+      fontSize: "0.9rem",
+      textTransform: "uppercase",
+      letterSpacing: "0.1rem",
+    },
+  },
+  table: {
+    style: {
+      color: "#464E5F",
+    },
+  },
+  header: {
+    style: {
+      margin: "0 0.75rem 0 0",
+      fontWeight: "500",
+      fontSize: "1.275rem",
+      color: "#212121",
+    },
+  },
 };
 
-export class MyPage extends Component {
+class MyPage extends Component {
   convertArrayOfObjectsToCSV(array) {
     let result;
+    let graph;
 
     const columnDelimiter = ",";
     const lineDelimiter = "\n";
-    const keys = Object.keys(this.state.res[0]);
+    const keys = Object.keys(this.props.currentPrices[0]);
 
     result = "";
     result += keys.join(columnDelimiter);
@@ -227,6 +276,7 @@ export class MyPage extends Component {
       Oos: "0",
       LLimit: null,
       ULimit: null,
+      showModal: false,
     };
   }
 
@@ -284,7 +334,7 @@ export class MyPage extends Component {
   };
   getResultHandler = () => {
     this.setState({ res: [], pending: true });
-    const date = this.state.date;
+    let date = this.state.date;
     let Llimit = this.state.LLimit;
     let Ulimit = this.state.ULimit;
     if (Llimit == null) {
@@ -295,20 +345,30 @@ export class MyPage extends Component {
     }
     const formattedDate = `${date.getFullYear()}-${date.getMonth() +
       1}-${date.getDate()}`;
-    const data = JSON.stringify({
-      brand: this.state.selectedBrand,
-      L1: this.state.selectedL1,
-      L2: this.state.selectedL2,
-      L3: this.state.selectedL3,
-      Oos: this.state.Oos,
-      Llimit: Llimit,
-      Ulimit: Ulimit,
-      date: formattedDate,
-    });
-    axios.post("/populateResult/", data).then((res) => {
-      console.log(res.data);
-      this.setState({ res: res.data, pending: false });
-    });
+    // const data = JSON.stringify({
+    //   brand: this.state.selectedBrand,
+    //   L1: this.state.selectedL1,
+    //   L2: this.state.selectedL2,
+    //   L3: this.state.selectedL3,
+    //   Oos: this.state.Oos,
+    //   Llimit: Llimit,
+    //   Ulimit: Ulimit,
+    //   date: formattedDate,
+    // });
+    // axios.post("/populateResult/", data).then((res) => {
+    //   console.log(res.data);
+    //   this.setState({ res: res.data, pending: false });
+    // });
+    const brand = this.state.selectedBrand;
+    const L1 = this.state.selectedL1;
+    const L2 = this.state.selectedL2;
+    const L3 = this.state.selectedL3;
+    const Oos = this.state.Oos;
+    date = formattedDate;
+    const data = { brand, L1, L2, L3, Oos, Llimit, Ulimit, date };
+    console.log(data);
+    this.props.getCurrentPrice(data);
+    this.setState({ pending: false });
   };
   OutOfStockHandler = (event) => {
     console.log(event.target);
@@ -320,29 +380,43 @@ export class MyPage extends Component {
   ULimitHandler = (event) => {
     this.setState({ ULimit: event.target.value.replace(/\D/, "") });
   };
+  onRowClickHandler = (row) => {
+    this.setState({ showModal: true });
+    this.graph = <TrendChart sku_id={row.sku_id} />;
+  };
+
+  closeModal = () => {
+    this.setState({ showModal: false });
+    this.graph = null;
+  };
+
   render() {
     // const suhbeader = useSubheader();
     // suhbeader.setTitle("My Custom title");
     const outOfStock = ["Include Out of Stock", "Not Include Out of Stock"];
     const actionsMemo = (
-      <this.Export onExport={() => this.downloadCSV(this.state.res)} />
+      <this.Export
+        onExport={() => this.downloadCSV(this.props.currentPrices)}
+      />
     );
     let table = [];
-    if (this.state.res) {
+    let graph = null;
+    if (this.props.currentPrices) {
       table = (
         <DataTable
           className={classes.Price_Table}
           title="Price report"
+          keyField="sku_id"
           columns={columns}
-          data={this.state.res}
+          data={this.props.currentPrices}
           customStyles={customStyles}
           pagination
-          highlightOnHover
-          pointerOnHover
           actions={actionsMemo}
-          progressPending={this.state.pending}
+          progressPending={this.props.pending}
           progressComponent={<LinearIndeterminate />}
           persistTableHead
+          responsive
+          onRowClicked={this.onRowClickHandler}
         />
       );
     }
@@ -480,9 +554,24 @@ export class MyPage extends Component {
           </div>
         </div>
         {table}
+        <Modal show={this.state.showModal} modalClosed={this.closeModal}>
+          {this.graph}
+        </Modal>
       </div>
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    currentPrices: state.price.prices,
+    pending: state.price.pending,
+  };
+};
 
-export default MyPage;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getCurrentPrice: (requestBody) =>
+      dispatch({ type: types.GETCURRENTPRICE, payload: requestBody }),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(MyPage);

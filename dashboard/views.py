@@ -5,6 +5,7 @@ import json
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 @csrf_exempt
@@ -94,6 +95,45 @@ def populateResult(request):
         json_data.append(dict(zip(row_headers, row)))
 
     return HttpResponse(json.dumps(json_data))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def priceHistory(request):
+    data = json.loads(request.body)
+    comp_name = data["comp_name"]
+    sku_id = data["sku_id"]
+    cur = connection.cursor()
+    query = "call ecomp_intel.price_history('%s', '%s');" % (comp_name, sku_id)
+    cur.execute(query)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def priceTrendHistory(request):
+    data = json.loads(request.body)
+    sku_id = data["sku_id"]
+    cur = connection.cursor()
+    query = "call ecomp_intel.price_trend_history('%s');" % (sku_id)
+    print(query)
+    cur.execute(query)
+    result = cur.fetchall()
+    print(result)
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
 
 
 '''
