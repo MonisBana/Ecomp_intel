@@ -103,8 +103,7 @@ dist
 # TernJS port file
 .tern-port
 
-*.log
-*.pot
+
 *.pyc
 __pycache__/
 local_settings.py
