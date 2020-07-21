@@ -9,11 +9,5 @@
 }
 
 .notActive {
-  text-decoration: none;
   color: black;
-}
-
-.lowestSeller {
-  color: "#F64E60";
-  background-color: "#FFE2E5";
 }

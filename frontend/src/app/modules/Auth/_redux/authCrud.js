@@ -1,7 +1,8 @@
-import axios from "axios";
+import axios from "../../../../axios-base";
 
-export const LOGIN_URL = "api/auth/login";
-export const REGISTER_URL = "api/auth/register";
+export const LOGIN_URL = "/rest-auth/login/";
+export const LOGOUT_URL = "/rest-auth/logout/";
+export const REGISTER_URL = "/rest-auth/registration/";
 export const REQUEST_PASSWORD_URL = "api/auth/forgot-password";
 
 export const ME_URL = "api/me";
@@ -10,8 +11,14 @@ export function login(email, password) {
   return axios.post(LOGIN_URL, { email, password });
 }
 
-export function register(email, fullname, username, password) {
-  return axios.post(REGISTER_URL, { email, fullname, username, password });
+export function register(email, first_name, last_name, password1, password2) {
+  return axios.post(REGISTER_URL, {
+    email,
+    first_name,
+    last_name,
+    password1,
+    password2,
+  });
 }
 
 export function requestPassword(email) {

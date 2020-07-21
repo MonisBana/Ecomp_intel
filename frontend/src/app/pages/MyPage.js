@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 //import { useSubheader } from "../../_metronic/layout";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 // import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 import { Form, InputGroup } from "react-bootstrap";
-import { getCurrentPrice } from "../../redux/actions/action";
 import { connect } from "react-redux";
 import axios from "../../axios-base";
 import DatePicker from "react-datepicker";
@@ -53,24 +52,26 @@ const columns = [
     sortable: true,
     cell: (row) => (
       <NavLink to={"PriceHistory/amazon/" + row.sku_id}>
-        <p>{row.amazonp}</p>
+        <p className={classes.notActive}>{row.amazonp}</p>
       </NavLink>
     ),
     conditionalCellStyles: [
       {
         when: (row) => row.amazonp == row.Lowescast,
         style: {
-          color: "#F64E60",
-          backgroundColor: "#FFE2E5",
-          fontWeight: 400,
-          width: "30%",
-          padding: "0.9rem 0.75rem",
-          height: "24px",
-          fontSize: "0.9rem",
-          borderRadius: "0.42rem",
-          flexGrow: 0,
-          minWidth: "60px",
-          margin: "10px 80px 5px 5px",
+          p: {
+            color: "#F64E60 !important",
+            backgroundColor: "#FFE2E5",
+            fontWeight: 400,
+            width: "30%",
+            padding: "0.1rem 0.2rem",
+            height: "24px",
+            fontSize: "0.9rem",
+            borderRadius: "0.42rem",
+            flexGrow: 0,
+            minWidth: "60px",
+            textAlign: "center",
+          },
         },
       },
     ],
@@ -81,13 +82,27 @@ const columns = [
     sortable: true,
     cell: (row) => (
       <NavLink to={"PriceHistory/flipkart/" + row.sku_id}>
-        <p>{row.flipkartp}</p>
+        <p className={classes.notActive}>{row.flipkartp}</p>
       </NavLink>
     ),
     conditionalCellStyles: [
       {
         when: (row) => row.flipkartp == row.Lowescast,
-        style: classes.lowestSeller,
+        style: {
+          p: {
+            color: "#F64E60 !important",
+            backgroundColor: "#FFE2E5",
+            fontWeight: 400,
+            width: "30%",
+            padding: "0.1rem 0.2rem",
+            height: "24px",
+            fontSize: "0.9rem",
+            borderRadius: "0.42rem",
+            flexGrow: 0,
+            minWidth: "60px",
+            textAlign: "center",
+          },
+        },
       },
     ],
   },
@@ -97,24 +112,26 @@ const columns = [
     sortable: true,
     cell: (row) => (
       <NavLink to={"PriceHistory/reliance/" + row.sku_id}>
-        <p>{row.reliancep}</p>
+        <p className={classes.notActive}>{row.reliancep}</p>
       </NavLink>
     ),
     conditionalCellStyles: [
       {
         when: (row) => row.reliancep == row.Lowescast,
         style: {
-          color: "#F64E60",
-          backgroundColor: "#FFE2E5",
-          fontWeight: 400,
-          width: "30%",
-          padding: "0.9rem 0.75rem",
-          height: "24px",
-          fontSize: "0.9rem",
-          borderRadius: "0.42rem",
-          flexGrow: 0,
-          minWidth: "60px",
-          margin: "10px 80px 5px 5px",
+          p: {
+            color: "#F64E60 !important",
+            backgroundColor: "#FFE2E5",
+            fontWeight: 400,
+            width: "30%",
+            padding: "0.1rem 0.2rem",
+            height: "24px",
+            fontSize: "0.9rem",
+            borderRadius: "0.42rem",
+            flexGrow: 0,
+            minWidth: "60px",
+            textAlign: "center",
+          },
         },
       },
     ],
@@ -125,24 +142,26 @@ const columns = [
     sortable: true,
     cell: (row) => (
       <NavLink to={"PriceHistory/tatacliq/" + row.sku_id}>
-        <p>{row.tatap}</p>
+        <p className={classes.notActive}>{row.tatap}</p>
       </NavLink>
     ),
     conditionalCellStyles: [
       {
         when: (row) => row.tatap == row.Lowescast,
         style: {
-          color: "#F64E60",
-          backgroundColor: "#FFE2E5",
-          fontWeight: 400,
-          width: "30%",
-          padding: "0.9rem 0.75rem",
-          height: "24px",
-          fontSize: "0.9rem",
-          borderRadius: "0.42rem",
-          flexGrow: 0,
-          minWidth: "60px",
-          margin: "10px 80px 5px 5px",
+          p: {
+            color: "#F64E60 !important",
+            backgroundColor: "#FFE2E5",
+            fontWeight: 400,
+            width: "30%",
+            padding: "0.1rem 0.2rem",
+            height: "24px",
+            fontSize: "0.9rem",
+            borderRadius: "0.42rem",
+            flexGrow: 0,
+            minWidth: "60px",
+            textAlign: "center",
+          },
         },
       },
     ],
@@ -153,13 +172,27 @@ const columns = [
     sortable: true,
     cell: (row) => (
       <NavLink to={"PriceHistory/paytm/" + row.sku_id}>
-        <p>{row.paytmp}</p>
+        <p className={classes.notActive}>{row.paytmp}</p>
       </NavLink>
     ),
     conditionalCellStyles: [
       {
         when: (row) => row.paytmp == row.Lowescast,
-        style: classes.lowestSeller,
+        style: {
+          p: {
+            color: "#F64E60 !important",
+            backgroundColor: "#FFE2E5",
+            fontWeight: 400,
+            width: "30%",
+            padding: "0.1rem 0.2rem",
+            height: "24px",
+            fontSize: "0.9rem",
+            borderRadius: "0.42rem",
+            flexGrow: 0,
+            minWidth: "60px",
+            textAlign: "center",
+          },
+        },
       },
     ],
   },
@@ -200,9 +233,9 @@ const customStyles = {
 };
 
 class MyPage extends Component {
+  graph;
   convertArrayOfObjectsToCSV(array) {
     let result;
-    let graph;
 
     const columnDelimiter = ",";
     const lineDelimiter = "\n";
@@ -345,30 +378,30 @@ class MyPage extends Component {
     }
     const formattedDate = `${date.getFullYear()}-${date.getMonth() +
       1}-${date.getDate()}`;
-    // const data = JSON.stringify({
-    //   brand: this.state.selectedBrand,
-    //   L1: this.state.selectedL1,
-    //   L2: this.state.selectedL2,
-    //   L3: this.state.selectedL3,
-    //   Oos: this.state.Oos,
-    //   Llimit: Llimit,
-    //   Ulimit: Ulimit,
-    //   date: formattedDate,
-    // });
-    // axios.post("/populateResult/", data).then((res) => {
-    //   console.log(res.data);
-    //   this.setState({ res: res.data, pending: false });
-    // });
-    const brand = this.state.selectedBrand;
-    const L1 = this.state.selectedL1;
-    const L2 = this.state.selectedL2;
-    const L3 = this.state.selectedL3;
-    const Oos = this.state.Oos;
-    date = formattedDate;
-    const data = { brand, L1, L2, L3, Oos, Llimit, Ulimit, date };
-    console.log(data);
-    this.props.getCurrentPrice(data);
-    this.setState({ pending: false });
+    const data = JSON.stringify({
+      brand: this.state.selectedBrand,
+      L1: this.state.selectedL1,
+      L2: this.state.selectedL2,
+      L3: this.state.selectedL3,
+      Oos: this.state.Oos,
+      Llimit: Llimit,
+      Ulimit: Ulimit,
+      date: formattedDate,
+    });
+    axios.post("/populateResult/", data).then((res) => {
+      this.props.getCurrentPrice(res.data);
+      this.setState({ pending: false });
+    });
+    // const brand = this.state.selectedBrand;
+    // const L1 = this.state.selectedL1;
+    // const L2 = this.state.selectedL2;
+    // const L3 = this.state.selectedL3;
+    // const Oos = this.state.Oos;
+    // date = formattedDate;
+    // const data = { brand, L1, L2, L3, Oos, Llimit, Ulimit, date };
+    // console.log(data);
+    // this.props.getCurrentPrice(data);
+    // this.setState({ pending: false });
   };
   OutOfStockHandler = (event) => {
     console.log(event.target);
@@ -400,7 +433,6 @@ class MyPage extends Component {
       />
     );
     let table = [];
-    let graph = null;
     if (this.props.currentPrices) {
       table = (
         <DataTable
@@ -412,7 +444,7 @@ class MyPage extends Component {
           customStyles={customStyles}
           pagination
           actions={actionsMemo}
-          progressPending={this.props.pending}
+          progressPending={this.state.pending}
           progressComponent={<LinearIndeterminate />}
           persistTableHead
           responsive
@@ -564,7 +596,6 @@ class MyPage extends Component {
 const mapStateToProps = (state) => {
   return {
     currentPrices: state.price.prices,
-    pending: state.price.pending,
   };
 };
 

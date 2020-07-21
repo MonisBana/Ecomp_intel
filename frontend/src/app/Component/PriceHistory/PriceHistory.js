@@ -3,9 +3,9 @@ import axios from "../../../axios-base";
 import DataTable from "react-data-table-component";
 import LinearIndeterminate from "../LinearProgress/LinearProgress";
 import classes from "./PriceHistory.module.css";
-import { Line } from "react-chartjs-2";
-import { Card, Row } from "react-bootstrap";
 
+import HighchartsReact from "highcharts-react-official";
+import Highcharts from "highcharts";
 const columns = [
   {
     name: "Comp_id",
@@ -88,6 +88,7 @@ class PriceHistory extends Component {
     this.state = {
       priceHistory: [],
       pending: false,
+      chartOptions: null,
     };
   }
   componentDidMount() {
@@ -102,38 +103,45 @@ class PriceHistory extends Component {
         })
       )
       .then((res) => {
-        this.setState({ priceHistory: res.data, pending: false });
+        this.setState({
+          priceHistory: res.data,
+          pending: false,
+          chartOptions: {
+            title: {
+              text: "Price History",
+            },
+            yAxis: {
+              title: {
+                text: "Price",
+              },
+            },
+            xAxis: {
+              type: "datetime",
+            },
+            plotOptions: {
+              series: {
+                pointStart: Date.parse(res.data[0].dt),
+                pointInterval: 24 * 3600 * 1000,
+              },
+            },
+            series: [
+              {
+                data: res.data.map((product) => product.dprice),
+                name: "Digi1",
+              },
+              {
+                data: res.data.map((product) => product.price),
+                name: "Competitor",
+              },
+            ],
+          },
+        });
       });
   }
   backHandler = () => {
     this.props.history.goBack();
   };
   render() {
-    let graphConfig = {
-      labels: this.state.priceHistory.map((product) => product.dt),
-
-      datasets: [
-        {
-          label: "Price",
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgba(78, 121, 167, 0.2)",
-          borderColor: "rgba(78, 121, 167,1)",
-          borderWidth: 2,
-          data: this.state.priceHistory.map((product) => product.price),
-        },
-        {
-          label: "Digi1 Price",
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgb(225, 87, 89,0.2 )",
-          borderColor: "rgba(225, 87, 89, 1)",
-          borderWidth: 2,
-          data: this.state.priceHistory.map((product) => product.dprice),
-        },
-      ],
-    };
-
     let table = null;
     let graph = null;
     if (this.state.priceHistory) {
@@ -154,44 +162,10 @@ class PriceHistory extends Component {
     }
     if (this.state.priceHistory) {
       graph = (
-        <Row className="align-item-center justify-content-center">
-          <Card style={{ width: "80%" }}>
-            <Line
-              data={graphConfig}
-              options={{
-                title: {
-                  display: true,
-                  text: "Price History",
-                  fontSize: 20,
-                  fontFamily: "Poppins",
-                  fontWeight: 400,
-                },
-                legend: {
-                  display: true,
-                  position: "top",
-                },
-                responsive: true,
-                maintainAspectRatio: true,
-                scales: {
-                  xAxes: [
-                    {
-                      gridLines: {
-                        drawOnChartArea: false,
-                      },
-                    },
-                  ],
-                  yAxes: [
-                    {
-                      gridLines: {
-                        drawOnChartArea: false,
-                      },
-                    },
-                  ],
-                },
-              }}
-            />
-          </Card>
-        </Row>
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={this.state.chartOptions}
+        />
       );
     }
     return (
