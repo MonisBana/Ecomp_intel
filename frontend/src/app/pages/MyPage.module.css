@@ -3,17 +3,6 @@
   display: inline-block;
 }
 
-.Price_Table {
-  margin-top: 20px;
-  width: 100%;
-}
-
 .notActive {
-  text-decoration: none;
   color: black;
-}
-
-.lowestSeller {
-  color: "#F64E60";
-  background-color: "#FFE2E5";
 }

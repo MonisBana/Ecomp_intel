@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import axios from "../../../axios-base";
-import { Line } from "react-chartjs-2";
-import { Card, Row, Spinner } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
+import HighchartsReact from "highcharts-react-official";
+import Highcharts from "highcharts";
 
 const TrendChart = (props) => {
-  const [data, setdata] = useState(null);
+  const [trendData, setTrendData] = useState(null);
+  const [chartOptions, setChartOptions] = useState(null);
   let graph = (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <Spinner animation="border" variant="primary" />
     </div>
   );
-  if (!data) {
+  if (!trendData) {
     axios
       .post(
         "/priceTrendHistory/",
@@ -19,104 +21,53 @@ const TrendChart = (props) => {
         })
       )
       .then((res) => {
-        setdata(res.data);
+        setChartOptions({
+          title: {
+            text: "Price Trend",
+          },
+          yAxis: {
+            title: {
+              text: "Price",
+            },
+          },
+          xAxis: {
+            type: "datetime",
+          },
+          plotOptions: {
+            series: {
+              pointStart: Date.parse(res.data[0].dt),
+              pointInterval: 24 * 3600 * 1000,
+            },
+          },
+          series: [
+            {
+              data: res.data.map((product) => product.dprice),
+              name: "Digi1",
+            },
+            {
+              data: res.data.map((product) => product.fprice),
+              name: "Flipkart",
+            },
+            {
+              data: res.data.map((product) => product.aprice),
+              name: "Amazon",
+            },
+            {
+              data: res.data.map((product) => product.tprice),
+              name: "Tata",
+            },
+            {
+              data: res.data.map((product) => product.pprice),
+              name: "Paytm",
+            },
+          ],
+        });
+        setTrendData(res.data);
       });
   }
-  let graphConfig = null;
-  if (data) {
-    graphConfig = {
-      labels: data.map((product) => product.dt),
-      datasets: [
-        {
-          label: "Amazon",
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgba(78, 121, 167, 0.2)",
-          borderColor: "rgba(78, 121, 167,1)",
-          borderWidth: 2,
-          data: data.map((product) => product.aprice),
-        },
-        {
-          label: "Flipkart",
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgba(255, 206, 86, 0.2)",
-          borderColor: "rgba(255, 206, 86,1)",
-          borderWidth: 2,
-          data: data.map((product) => product.fprice),
-        },
-        {
-          label: "Paytm",
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgba(54, 162, 235, 0.2)",
-          borderColor: "rgba(54, 162, 235,1)",
-          borderWidth: 2,
-          data: data.map((product) => product.pprice),
-        },
-        {
-          label: "Tata Cliq",
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-          borderColor: "rgba(75, 192, 192,1)",
-          borderWidth: 2,
-          data: data.map((product) => product.tprice),
-        },
-        {
-          label: "Digi1 Price",
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgb(225, 87, 89,0.2 )",
-          borderColor: "rgba(225, 87, 89, 1)",
-          borderWidth: 2,
-          data: data.map((product) => product.dprice),
-        },
-      ],
-    };
-    graph = (
-      <Row className="align-item-center justify-content-center">
-        <Card style={{ width: "80%" }}>
-          <Line
-            data={graphConfig}
-            options={{
-              title: {
-                display: true,
-                text: "Price Trend",
-                fontSize: 20,
-                fontFamily: "Poppins",
-                fontWeight: 400,
-              },
-              legend: {
-                display: true,
-                position: "top",
-              },
-              responsive: true,
-              maintainAspectRatio: true,
-
-              scales: {
-                xAxes: [
-                  {
-                    gridLines: {
-                      drawOnChartArea: false,
-                    },
-                  },
-                ],
-                yAxes: [
-                  {
-                    gridLines: {
-                      drawOnChartArea: false,
-                    },
-                  },
-                ],
-              },
-            }}
-          />
-        </Card>
-      </Row>
-    );
+  if (trendData) {
+    graph = <HighchartsReact highcharts={Highcharts} options={chartOptions} />;
   }
   return <div>{graph}</div>;
 };
-
 export default TrendChart;

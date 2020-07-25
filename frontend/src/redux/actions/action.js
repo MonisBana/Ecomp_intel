@@ -14,3 +14,8 @@ export const getCurrentPrice = (requestBody) => ({
   type: types.GETCURRENTPRICE,
   payload: requestBody,
 });
+
+export const getPriceDrop = (requestBody) => ({
+  type: types.GETPRICEDROP,
+  payload: requestBody,
+});
