@@ -6,11 +6,12 @@ import { Link } from "react-router-dom";
 import { FormattedMessage, injectIntl } from "react-intl";
 import * as auth from "../_redux/authRedux";
 import { register } from "../_redux/authCrud";
+import axios from "../../../../axios-base";
 
 const initialValues = {
-  fullname: "",
+  firstname: "Monis",
   email: "",
-  username: "",
+  lastname: "Bana",
   password: "",
   changepassword: "",
   acceptTerms: false,
@@ -20,7 +21,7 @@ function Registration(props) {
   const { intl } = props;
   const [loading, setLoading] = useState(false);
   const RegistrationSchema = Yup.object().shape({
-    fullname: Yup.string()
+    firstname: Yup.string()
       .min(3, "Minimum 3 symbols")
       .max(50, "Maximum 50 symbols")
       .required(
@@ -37,7 +38,7 @@ function Registration(props) {
           id: "AUTH.VALIDATION.REQUIRED_FIELD",
         })
       ),
-    username: Yup.string()
+    lastname: Yup.string()
       .min(3, "Minimum 3 symbols")
       .max(50, "Maximum 50 symbols")
       .required(
@@ -96,10 +97,25 @@ function Registration(props) {
     validationSchema: RegistrationSchema,
     onSubmit: (values, { setStatus, setSubmitting }) => {
       enableLoading();
-      register(values.email, values.fullname, values.username, values.password)
-        .then(({ data: { accessToken } }) => {
-          props.register(accessToken);
-          disableLoading();
+      register(
+        values.email,
+        values.firstname,
+        values.lastname,
+        values.password,
+        values.changepassword
+      )
+        .then((response) => {
+          axios
+            .get("rest-auth/user/", {
+              headers: {
+                Authorization: "Token " + response.data.key, //the token is a variable which holds the token
+              },
+            })
+            .then((res) => {
+              console.log(res.data);
+              props.register(response.data.key, res.data);
+            })
+            .then(disableLoading());
         })
         .catch(() => {
           setSubmitting(false);
@@ -137,25 +153,42 @@ function Registration(props) {
         )}
         {/* end: Alert */}
 
-        {/* begin: Fullname */}
+        {/* begin: firstname */}
         <div className="form-group fv-plugins-icon-container">
           <input
-            placeholder="Full name"
+            placeholder="First name"
             type="text"
             className={`form-control form-control-solid h-auto py-5 px-6 ${getInputClasses(
-              "fullname"
+              "firstname"
             )}`}
-            name="fullname"
-            {...formik.getFieldProps("fullname")}
+            name="firstname"
+            {...formik.getFieldProps("firstname")}
           />
-          {formik.touched.fullname && formik.errors.fullname ? (
+          {formik.touched.firstname && formik.errors.firstname ? (
             <div className="fv-plugins-message-container">
-              <div className="fv-help-block">{formik.errors.fullname}</div>
+              <div className="fv-help-block">{formik.errors.firstname}</div>
             </div>
           ) : null}
         </div>
-        {/* end: Fullname */}
-
+        {/* end: firstname */}
+        {/* begin: lastname */}
+        <div className="form-group fv-plugins-icon-container">
+          <input
+            placeholder="last name"
+            type="text"
+            className={`form-control form-control-solid h-auto py-5 px-6 ${getInputClasses(
+              "lastname"
+            )}`}
+            name="lastname"
+            {...formik.getFieldProps("lastname")}
+          />
+          {formik.touched.lastname && formik.errors.ulastnameername ? (
+            <div className="fv-plugins-message-container">
+              <div className="fv-help-block">{formik.errors.lastname}</div>
+            </div>
+          ) : null}
+        </div>
+        {/* end: lastname */}
         {/* begin: Email */}
         <div className="form-group fv-plugins-icon-container">
           <input
@@ -174,25 +207,6 @@ function Registration(props) {
           ) : null}
         </div>
         {/* end: Email */}
-
-        {/* begin: Username */}
-        <div className="form-group fv-plugins-icon-container">
-          <input
-            placeholder="User name"
-            type="text"
-            className={`form-control form-control-solid h-auto py-5 px-6 ${getInputClasses(
-              "username"
-            )}`}
-            name="username"
-            {...formik.getFieldProps("username")}
-          />
-          {formik.touched.username && formik.errors.username ? (
-            <div className="fv-plugins-message-container">
-              <div className="fv-help-block">{formik.errors.username}</div>
-            </div>
-          ) : null}
-        </div>
-        {/* end: Username */}
 
         {/* begin: Password */}
         <div className="form-group fv-plugins-icon-container">

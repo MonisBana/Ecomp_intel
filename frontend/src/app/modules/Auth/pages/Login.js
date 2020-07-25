@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { FormattedMessage, injectIntl } from "react-intl";
 import * as auth from "../_redux/authRedux";
 import { login } from "../_redux/authCrud";
+import axios from "../../../../axios-base";
 
 /*
   INTL (i18n) docs:
@@ -18,8 +19,8 @@ import { login } from "../_redux/authCrud";
 */
 
 const initialValues = {
-  email: "admin@demo.com",
-  password: "demo",
+  email: "monisbana97@gmail.com",
+  password: "abc@1234",
 };
 
 function Login(props) {
@@ -72,9 +73,18 @@ function Login(props) {
       enableLoading();
       setTimeout(() => {
         login(values.email, values.password)
-          .then(({ data: { accessToken } }) => {
-            disableLoading();
-            props.login(accessToken);
+          .then((response) => {
+            axios
+              .get("rest-auth/user/", {
+                headers: {
+                  Authorization: "Token " + response.data.key, //the token is a variable which holds the token
+                },
+              })
+              .then((res) => {
+                console.log(res.data);
+                props.login(response.data.key, res.data);
+              })
+              .then(disableLoading());
           })
           .catch(() => {
             disableLoading();

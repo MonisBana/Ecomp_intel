@@ -2,3 +2,7 @@
   margin: 10px;
   display: inline-block;
 }
+
+.notActive {
+  color: black;
+}

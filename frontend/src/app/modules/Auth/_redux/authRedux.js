@@ -8,12 +8,12 @@ export const actionTypes = {
   Logout: "[Logout] Action",
   Register: "[Register] Action",
   UserRequested: "[Request User] Action",
-  UserLoaded: "[Load User] Auth API"
+  UserLoaded: "[Load User] Auth API",
 };
 
 const initialAuthState = {
   user: undefined,
-  authToken: undefined
+  authToken: undefined,
 };
 
 export const reducer = persistReducer(
@@ -21,15 +21,15 @@ export const reducer = persistReducer(
   (state = initialAuthState, action) => {
     switch (action.type) {
       case actionTypes.Login: {
-        const { authToken } = action.payload;
-
-        return { authToken, user: undefined };
+        const { authToken, user } = action.payload;
+        console.log(action.payload);
+        return { ...state, authToken, user };
       }
 
       case actionTypes.Register: {
-        const { authToken } = action.payload;
+        const { authToken, user } = action.payload;
 
-        return { authToken, user: undefined };
+        return { ...state, authToken, user };
       }
 
       case actionTypes.Logout: {
@@ -49,23 +49,34 @@ export const reducer = persistReducer(
 );
 
 export const actions = {
-  login: authToken => ({ type: actionTypes.Login, payload: { authToken } }),
-  register: authToken => ({
+  login: (authToken, user) => ({
+    type: actionTypes.Login,
+    payload: { authToken, user },
+  }),
+  register: (authToken, user) => ({
     type: actionTypes.Register,
-    payload: { authToken }
+    payload: { authToken, user },
   }),
   logout: () => ({ type: actionTypes.Logout }),
-  requestUser: user => ({ type: actionTypes.UserRequested, payload: { user } }),
-  fulfillUser: user => ({ type: actionTypes.UserLoaded, payload: { user } })
+  requestUser: (user) => ({
+    type: actionTypes.UserRequested,
+    payload: { user },
+  }),
+  fulfillUser: (user) => ({ type: actionTypes.UserLoaded, payload: { user } }),
 };
 
 export function* saga() {
   yield takeLatest(actionTypes.Login, function* loginSaga() {
-    yield put(actions.requestUser());
+    //yield put(actions.requestUser());
+  });
+
+  yield takeLatest(actionTypes.Logout, function* logoutSaga() {
+    //yield put(actions.requestUser());
+    //yield logout();
   });
 
   yield takeLatest(actionTypes.Register, function* registerSaga() {
-    yield put(actions.requestUser());
+    //yield put(actions.requestUser());
   });
 
   yield takeLatest(actionTypes.UserRequested, function* userRequested() {

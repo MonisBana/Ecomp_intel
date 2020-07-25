@@ -20,7 +20,6 @@ def populateBrand(request):
     return Response(results)
 
 
-
 @csrf_exempt
 @api_view(['POST'])
 def populateL1(request):
@@ -119,6 +118,42 @@ def populateResult(request):
             where dp.Brand='%s' and dp.L1='%s' and dp.L2='%s' and dp.L3='%s';
     """ % (date, date, date, date, date, brand, L1, L2, L3)
 
+
+@csrf_exempt
+def populatePriceDrop(request):
+    data = json.loads(request.body)
+    brand = data["brand"]
+    L1 = data["L1"]
+    L2 = data["L2"]
+    L3 = data["L3"]
+    date = data["date"]
+    Llimit = data["Llimit"]
+    Ulimit = data["Ulimit"]
+    Oos = data["Oos"]
+
+    cur = connection.cursor()
+    query = "call ecomp_intel.price_drop('%s', '%s', '%s', '%s','%s', '%s', '%s','%s');" % (
+        brand, L1, L2, L3, date, Llimit, Ulimit, Oos)
+    print("query", query)
+    cur.execute(query)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def priceHistory(request):
+    data = json.loads(request.body)
+    comp_name = data["comp_name"]
+    sku_id = data["sku_id"]
+    cur = connection.cursor()
+    query = "call ecomp_intel.price_history('%s', '%s');" % (comp_name, sku_id)
     cur.execute(query)
     result = cur.fetchall()
     cur.close()
