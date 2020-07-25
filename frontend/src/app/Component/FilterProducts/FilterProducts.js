@@ -17,8 +17,8 @@ const FilterProducts = (props) => {
   const [selectedL3, setSelectedL3] = useState("0");
   const [Oos, setSelectedOos] = useState("0");
   const [selectedDate, setDate] = useState(new Date());
-  const [LLimit, setLLimit] = useState(null);
-  const [ULimit, setULimit] = useState(null);
+  const [LLimit, setLLimit] = useState(0);
+  const [ULimit, setULimit] = useState(100000);
 
   const outOfStock = ["Include Out of Stock", "Not Include Out of Stock"];
 
@@ -74,35 +74,6 @@ const FilterProducts = (props) => {
   };
   const L3Handler = (event) => {
     setSelectedL3(event.target.value);
-  };
-  const getResultHandler = () => {
-    props.enablePending();
-    let date = selectedDate;
-    let Llimit = LLimit;
-    let Ulimit = ULimit;
-    if (Llimit == null) {
-      Llimit = 0;
-    }
-    if (Ulimit == null) {
-      Ulimit = 0;
-    }
-    const formattedDate = `${date.getFullYear()}-${date.getMonth() +
-      1}-${date.getDate()}`;
-    const data = JSON.stringify({
-      brand: selectedBrand,
-      L1: selectedL1,
-      L2: selectedL2,
-      L3: selectedL3,
-      Oos: Oos,
-      Llimit: Llimit,
-      Ulimit: Ulimit,
-      date: formattedDate,
-    });
-    console.log(data);
-    axios.post("/populateResult/", data).then((res) => {
-      props.getCurrentPrice(res.data);
-      props.disablePending();
-    });
   };
   const OutOfStockHandler = (event) => {
     setSelectedOos(event.target.selectedIndex - 1);
@@ -240,7 +211,18 @@ const FilterProducts = (props) => {
         <Button
           style={{ marginTop: "2rem" }}
           variant="primary"
-          onClick={getResultHandler}
+          onClick={() =>
+            props.getResultHandler(
+              selectedBrand,
+              selectedL1,
+              selectedL2,
+              selectedL3,
+              selectedDate,
+              Oos,
+              LLimit,
+              ULimit
+            )
+          }
         >
           Submit
         </Button>

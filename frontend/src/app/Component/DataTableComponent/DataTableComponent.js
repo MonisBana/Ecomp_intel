@@ -94,7 +94,7 @@ const DataTableComponent = (props) => {
       progressComponent={<LinearIndeterminate />}
       persistTableHead
       responsive
-      onRowClicked={props.onRowClickHandler}
+      onRowClicked={props.onRowClicked}
     />
   );
 };

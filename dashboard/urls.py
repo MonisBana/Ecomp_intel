@@ -10,4 +10,5 @@ urlpatterns = [
     path('populateResult/', views.populateResult),
     path('priceHistory/', views.priceHistory),
     path('priceTrendHistory/', views.priceTrendHistory),
+    path('populatePriceDrop/', views.populatePriceDrop),
 ]

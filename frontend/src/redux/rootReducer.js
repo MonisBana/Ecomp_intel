@@ -6,11 +6,13 @@ import { customersSlice } from "../app/modules/ECommerce/_redux/customers/custom
 import { productsSlice } from "../app/modules/ECommerce/_redux/products/productsSlice";
 import { remarksSlice } from "../app/modules/ECommerce/_redux/remarks/remarksSlice";
 import { specificationsSlice } from "../app/modules/ECommerce/_redux/specifications/specificationsSlice";
-import { currentPriceWatcher } from "./sagas";
-import priceReducer from "./reducers/reducer";
+import { currentPriceWatcher, priceDropWatcher } from "./sagas";
+import priceReducer from "./reducers/priceReducer";
+import priceDropReducer from "./reducers/priceDropReducer";
 
 export const rootReducer = combineReducers({
   price: priceReducer,
+  price_drop: priceDropReducer,
   auth: auth.reducer,
   customers: customersSlice.reducer,
   products: productsSlice.reducer,
@@ -19,5 +21,5 @@ export const rootReducer = combineReducers({
 });
 
 export function* rootSaga() {
-  yield all([auth.saga(), currentPriceWatcher()]);
+  yield all([auth.saga(), currentPriceWatcher(), priceDropWatcher()]);
 }

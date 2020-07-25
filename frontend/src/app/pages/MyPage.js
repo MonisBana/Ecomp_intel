@@ -3,6 +3,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import classes from "./MyPage.module.css";
 import { NavLink } from "react-router-dom";
+import axios from "../../axios-base";
+import * as types from "../../redux/types/type";
 import Modal from "../Component/Modal/Modal";
 import TrendChart from "../Component/TrendChart/TrendChart";
 import FilterProducts from "../Component/FilterProducts/FilterProducts";
@@ -167,6 +169,44 @@ class MyPage extends Component {
   disablePending = () => {
     this.setState({ pending: false });
   };
+  getResultHandler = (
+    selectedBrand,
+    selectedL1,
+    selectedL2,
+    selectedL3,
+    selectedDate,
+    Oos,
+    LLimit,
+    ULimit
+  ) => {
+    this.enablePending();
+    let date = selectedDate;
+    let Llimit = LLimit;
+    let Ulimit = ULimit;
+    if (Llimit == null) {
+      Llimit = 0;
+    }
+    if (Ulimit == null) {
+      Ulimit = 0;
+    }
+    const formattedDate = `${date.getFullYear()}-${date.getMonth() +
+      1}-${date.getDate()}`;
+    const data = JSON.stringify({
+      brand: selectedBrand,
+      L1: selectedL1,
+      L2: selectedL2,
+      L3: selectedL3,
+      Oos: Oos,
+      Llimit: Llimit,
+      Ulimit: Ulimit,
+      date: formattedDate,
+    });
+    console.log(data);
+    axios.post("/populateResult/", data).then((res) => {
+      this.props.getCurrentPrice(res.data);
+      this.disablePending();
+    });
+  };
 
   render() {
     // const suhbeader = useSubheader();
@@ -180,15 +220,13 @@ class MyPage extends Component {
           columns={columns}
           data={this.props.currentPrices}
           pending={this.state.pending}
+          onRowClicked={this.onRowClickHandler}
         />
       );
     }
     return (
       <div className="container-fluid">
-        <FilterProducts
-          enablePending={this.enablePending}
-          disablePending={this.disablePending}
-        />
+        <FilterProducts getResultHandler={this.getResultHandler} />
         {table}
         <Modal show={this.state.showModal} modalClosed={this.closeModal}>
           {this.graph}
@@ -202,5 +240,10 @@ const mapStateToProps = (state) => {
     currentPrices: state.price.prices,
   };
 };
-
-export default connect(mapStateToProps, null)(MyPage);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getCurrentPrice: (requestBody) =>
+      dispatch({ type: types.GETCURRENTPRICE, payload: requestBody }),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(MyPage);
