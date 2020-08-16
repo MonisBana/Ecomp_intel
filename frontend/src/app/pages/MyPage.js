@@ -89,22 +89,6 @@ const columns = [
     ],
   },
   {
-    name: "Reilance Digital",
-    selector: "reliancep",
-    sortable: true,
-    cell: (row) => (
-      <NavLink to={"PriceHistory/reliance/" + row.sku_id}>
-        <p className={classes.notActive}>{row.reliancep}</p>
-      </NavLink>
-    ),
-    conditionalCellStyles: [
-      {
-        when: (row) => row.reliancep == row.Lowescast,
-        style: conditionalCellStyle,
-      },
-    ],
-  },
-  {
     name: "Tata Cliq",
     selector: "tatap",
     sortable: true,
@@ -169,39 +153,8 @@ class MyPage extends Component {
   disablePending = () => {
     this.setState({ pending: false });
   };
-  getResultHandler = (
-    selectedBrand,
-    selectedL1,
-    selectedL2,
-    selectedL3,
-    selectedDate,
-    Oos,
-    LLimit,
-    ULimit
-  ) => {
+  getResultHandler = (data) => {
     this.enablePending();
-    let date = selectedDate;
-    let Llimit = LLimit;
-    let Ulimit = ULimit;
-    if (Llimit == null) {
-      Llimit = 0;
-    }
-    if (Ulimit == null) {
-      Ulimit = 0;
-    }
-    const formattedDate = `${date.getFullYear()}-${date.getMonth() +
-      1}-${date.getDate()}`;
-    const data = JSON.stringify({
-      brand: selectedBrand,
-      L1: selectedL1,
-      L2: selectedL2,
-      L3: selectedL3,
-      Oos: Oos,
-      Llimit: Llimit,
-      Ulimit: Ulimit,
-      date: formattedDate,
-    });
-    console.log(data);
     axios.post("/populateResult/", data).then((res) => {
       this.props.getCurrentPrice(res.data);
       this.disablePending();
@@ -226,7 +179,7 @@ class MyPage extends Component {
     }
     return (
       <div className="container-fluid">
-        <FilterProducts getResultHandler={this.getResultHandler} />
+        <FilterProducts getResultHandler={this.getResultHandler} hideDelta />
         {table}
         <Modal show={this.state.showModal} modalClosed={this.closeModal}>
           {this.graph}

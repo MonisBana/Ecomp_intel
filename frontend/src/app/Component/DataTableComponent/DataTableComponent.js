@@ -95,6 +95,8 @@ const DataTableComponent = (props) => {
       persistTableHead
       responsive
       onRowClicked={props.onRowClicked}
+      expandableRows={props.expandableRows}
+      expandableRowsComponent={props.expandableRowsComponent}
     />
   );
 };

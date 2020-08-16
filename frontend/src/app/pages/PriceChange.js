@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
-import classes from "./PriceDrop.module.css";
+import classes from "./PriceChange.module.css";
 import DataTable from "../Component/DataTableComponent/DataTableComponent";
 import FilterProducts from "../Component/FilterProducts/FilterProducts";
 import { connect } from "react-redux";
@@ -21,6 +21,7 @@ const LightTooltip = withStyles((theme) => ({
     fontSize: 11,
   },
 }))(Tooltip);
+
 const CustomCell = ({ old_price, new_price }) => (
   <LightTooltip
     arrow
@@ -34,8 +35,103 @@ const CustomCell = ({ old_price, new_price }) => (
     }
     placement="top"
   >
-    <p>{Math.abs(old_price - new_price)}</p>
+    <p>
+      {Math.abs(old_price - new_price) === 0 ? (
+        ""
+      ) : (
+        <p>
+          {Number((Math.abs(old_price - new_price) * 100) / old_price).toFixed(
+            2
+          )}{" "}
+          <span>%</span>
+        </p>
+      )}
+    </p>
   </LightTooltip>
+);
+
+const ExpandedComponent = ({ data }) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-evenly",
+      fontSize: "14px",
+      margin: "0.5rem",
+    }}
+  >
+    {(data.aprice === null) |
+    (Math.abs(data.aprice_old - data.aprice_new) === 0) ? (
+      ""
+    ) : (
+      <div>
+        <p>
+          <strong style={{ opacity: 0.9 }}>Amazon old Price:</strong>{" "}
+          {data.aprice_old}
+        </p>{" "}
+        <p>
+          <strong style={{ opacity: 0.9 }}>Amazon current Price:</strong>{" "}
+          {data.aprice_new}
+        </p>
+      </div>
+    )}
+    {(data.fprice === null) |
+    (Math.abs(data.fprice_old - data.fprice_new) === 0) ? (
+      ""
+    ) : (
+      <div>
+        <p>
+          <strong style={{ opacity: 0.9 }}>Flipkart old Price:</strong>{" "}
+          {data.fprice_old}
+        </p>{" "}
+        <p>
+          <strong style={{ opacity: 0.9 }}>Flipkart current Price:</strong>{" "}
+          {data.fprice_new}
+        </p>
+      </div>
+    )}
+    {(data.tprice === null) |
+    (Math.abs(data.tprice_old - data.tprice_new) === 0) ? (
+      ""
+    ) : (
+      <div>
+        <p>
+          <strong style={{ opacity: 0.9 }}>Tata old Price:</strong>{" "}
+          {data.tprice_old}
+        </p>{" "}
+        <p>
+          <strong style={{ opacity: 0.9 }}>Tata current Price:</strong>{" "}
+          {data.tprice_new}
+        </p>
+      </div>
+    )}
+    {(data.pprice === null) |
+    (Math.abs(data.pprice_old - data.pprice_new) === 0) ? (
+      ""
+    ) : (
+      <div>
+        <p>
+          <strong style={{ opacity: 0.9 }}>Paytm old Price:</strong>{" "}
+          {data.pprice_old}
+        </p>{" "}
+        <p>
+          <strong style={{ opacity: 0.9 }}>Paytm current Price:</strong>{" "}
+          {data.pprice_new}
+        </p>
+      </div>
+    )}
+    {(Math.abs(data.aprice_old - data.aprice_new) === 0) &
+    (Math.abs(data.fprice_old - data.fprice_new) === 0) &
+    (Math.abs(data.tprice_old - data.tprice_new) === 0) &
+    (Math.abs(data.pprice_old - data.pprice_new) === 0) ? (
+      <div>
+        <p>
+          <strong>No Price change</strong>
+        </p>
+      </div>
+    ) : (
+      ""
+    )}
+  </div>
 );
 
 const conditionalNegativeCellStyle = {
@@ -84,10 +180,22 @@ const columns = [
     selector: "L1",
   },
   {
+    name: "Price",
+    selector: "dprice_new",
+    sortable: true,
+    cell: (row) => (
+      <p>
+        <b style={{ opacity: 0.8 }}>{row.dprice_new}</b>
+      </p>
+    ),
+  },
+  {
     name: "Digi 1",
     selector: "dprice_new",
     sortable: true,
-    cell: (row) => <p>{row.dprice_old - row.dprice_new}</p>,
+    cell: (row) => (
+      <CustomCell old_price={row.dprice_old} new_price={row.dprice_new} />
+    ),
   },
   {
     name: "Thumbnail",
@@ -170,7 +278,7 @@ const columns = [
   },
 ];
 
-class PriceDrop extends Component {
+class PriceChange extends Component {
   constructor(props) {
     super(props);
 
@@ -184,39 +292,9 @@ class PriceDrop extends Component {
   disablePending = () => {
     this.setState({ pending: false });
   };
-  getResultHandler = (
-    selectedBrand,
-    selectedL1,
-    selectedL2,
-    selectedL3,
-    selectedDate,
-    Oos,
-    LLimit,
-    ULimit
-  ) => {
+  getResultHandler = (data) => {
     this.enablePending();
-    let date = selectedDate;
-    let Llimit = LLimit;
-    let Ulimit = ULimit;
-    if (Llimit == null) {
-      Llimit = 0;
-    }
-    if (Ulimit == null) {
-      Ulimit = 0;
-    }
-    const formattedDate = `${date.getFullYear()}-${date.getMonth() +
-      1}-${date.getDate()}`;
-    const data = JSON.stringify({
-      brand: selectedBrand,
-      L1: selectedL1,
-      L2: selectedL2,
-      L3: selectedL3,
-      Oos: Oos,
-      Llimit: Llimit,
-      Ulimit: Ulimit,
-      date: formattedDate,
-    });
-    console.log(data);
+
     axios.post("/populatePriceDrop/", data).then((res) => {
       this.props.getPriceDrop(res.data);
       this.disablePending();
@@ -227,16 +305,18 @@ class PriceDrop extends Component {
     if (this.props.price_drop) {
       table = (
         <DataTable
-          title="Price Drop"
+          title="Price Change"
           columns={columns}
           data={this.props.price_drop}
           pending={this.state.pending}
+          expandableRows={true}
+          expandableRowsComponent={<ExpandedComponent />}
         />
       );
     }
     return (
       <div className="container-fluid">
-        <FilterProducts getResultHandler={this.getResultHandler} />
+        <FilterProducts getResultHandler={this.getResultHandler} hideDelta />
         {table}
       </div>
     );
@@ -254,4 +334,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PriceDrop);
+export default connect(mapStateToProps, mapDispatchToProps)(PriceChange);

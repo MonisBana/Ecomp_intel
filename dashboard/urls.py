@@ -11,4 +11,10 @@ urlpatterns = [
     path('priceHistory/', views.priceHistory),
     path('priceTrendHistory/', views.priceTrendHistory),
     path('populatePriceDrop/', views.populatePriceDrop),
+    path('top10/', views.top10),
+    path('worst10/', views.worst10),
+    path('populateLCH/', views.populateLCH),
+    path('populateLCH_Sku/', views.populateLCH_Sku),
+    path('discount_grid/', views.discount_grid),
+    path('discount_grid_detail/', views.discount_grid_detail),
 ]

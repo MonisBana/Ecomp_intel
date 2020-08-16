@@ -46,14 +46,56 @@ export function AsideMenuList({ layoutProps }) {
         {/*end::1 Level*/}
         {/*begin::1 Level*/}
         <li
-          className={`menu-item ${getMenuItemActive("/price_drop")}`}
+          className={`menu-item ${getMenuItemActive("/price_change")}`}
           aria-haspopup="true"
         >
-          <NavLink className="menu-link" to="/price_drop">
+          <NavLink className="menu-link" to="/price_change">
             <span className="svg-icon menu-icon">
               <SVG src={toAbsoluteUrl("/media/svg/icons/Design/Layers.svg")} />
             </span>
-            <span className="menu-text">Price Drop</span>
+            <span className="menu-text">Price Change</span>
+          </NavLink>
+        </li>
+        {/*end::1 Level*/}
+
+        {/*begin::1 Level*/}
+        <li
+          className={`menu-item ${getMenuItemActive("/top_10")}`}
+          aria-haspopup="true"
+        >
+          <NavLink className="menu-link" to="/top_10">
+            <span className="svg-icon menu-icon">
+              <SVG src={toAbsoluteUrl("/media/svg/icons/Design/Layers.svg")} />
+            </span>
+            <span className="menu-text">Top 10</span>
+          </NavLink>
+        </li>
+        {/*end::1 Level*/}
+
+        {/*begin::1 Level*/}
+        <li
+          className={`menu-item ${getMenuItemActive("/lch")}`}
+          aria-haspopup="true"
+        >
+          <NavLink className="menu-link" to="/lch">
+            <span className="svg-icon menu-icon">
+              <SVG src={toAbsoluteUrl("/media/svg/icons/Design/Layers.svg")} />
+            </span>
+            <span className="menu-text">LCH</span>
+          </NavLink>
+        </li>
+        {/*end::1 Level*/}
+
+        {/*begin::1 Level*/}
+        <li
+          className={`menu-item ${getMenuItemActive("/discount_grid")}`}
+          aria-haspopup="true"
+        >
+          <NavLink className="menu-link" to="/discount_grid">
+            <span className="svg-icon menu-icon">
+              <SVG src={toAbsoluteUrl("/media/svg/icons/Design/Layers.svg")} />
+            </span>
+            <span className="menu-text">Discount Grid</span>
           </NavLink>
         </li>
         {/*end::1 Level*/}

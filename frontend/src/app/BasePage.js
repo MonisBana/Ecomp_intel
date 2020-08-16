@@ -5,7 +5,10 @@ import { BuilderPage } from "./pages/BuilderPage";
 import MyPage from "./pages/MyPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import PriceHistory from "./Component/PriceHistory/PriceHistory";
-import PriceDrop from "./pages/PriceDrop";
+import PriceChange from "./pages/PriceChange";
+import Top10 from "./pages/Top10";
+import LCH from "./pages/LCH";
+import DiscountGrid from "./pages/DiscountGrid";
 
 const GoogleMaterialPage = lazy(() =>
   import("./modules/GoogleMaterialExamples/GoogleMaterialPage")
@@ -33,7 +36,10 @@ export default function BasePage() {
         <ContentRoute path="/dashboard" component={DashboardPage} />
         <ContentRoute path="/builder" component={BuilderPage} />
         <ContentRoute path="/comp_price" component={MyPage} />
-        <ContentRoute path="/price_drop" component={PriceDrop} />
+        <ContentRoute path="/price_change" component={PriceChange} />
+        <ContentRoute path="/top_10" component={Top10} />
+        <ContentRoute path="/lch" component={LCH} />
+        <ContentRoute path="/discount_grid" component={DiscountGrid} />
         <Route path="/google-material" component={GoogleMaterialPage} />
         <Route path="/react-bootstrap" component={ReactBootstrapPage} />
         <Route path="/e-commerce" component={ECommercePage} />

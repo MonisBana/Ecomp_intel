@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "../../../axios-base";
-import { Spinner } from "react-bootstrap";
+import Spinner from "../Spinner/Spinner";
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
 
@@ -9,7 +9,7 @@ const TrendChart = (props) => {
   const [chartOptions, setChartOptions] = useState(null);
   let graph = (
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <Spinner animation="border" variant="primary" />
+      <Spinner />
     </div>
   );
   if (!trendData) {

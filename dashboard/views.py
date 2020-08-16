@@ -1,3 +1,4 @@
+from typing import List
 from django.shortcuts import HttpResponse
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
@@ -163,36 +164,153 @@ def priceTrendHistory(request):
     return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
 
 
-'''
 @csrf_exempt
-def populateChart(request):
-    pass
-    # graph = fig.to_html(full_html=False, default_height=500, default_width=700)
-    # context = {'graph': graph}
-    # x_data = [0, 1, 2, 3]
-    # y_data = [x**2 for x in x_data]
-    # plot_div = plot([Scatter(x=x_data, y=y_data,
-    #                          mode='lines', name='test',
-    #                          opacity=0.8, marker_color='green')],
-    #                 output_type='div')
-    # return render(request, 'Home.html', context)
+@api_view(['POST'])
+def top10(request):
+    data = json.loads(request.body)
+    brand = data["brand"]
+    category = data["L1"]
+    cur = connection.cursor()
+    query = "call ecomp_intel.top_10_products('%s','%s');" % (brand, category)
+    cur.execute(query)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
 
 
-'''
-# @csrf_exempt
-# def populateChart(request):
-#     data = json.loads(request.body)  # string to json
-#     udata = data["udata"]
-#     cur = connection.cursor()
-#     query = """
-#     call training.get_chart_data(%s);
-#     """ % (udata["sku_id"])
-#     cur.execute(query)
-#     results = cur.fetchall()
-#     row_headers = [x[0] for x in cur.description]
-#     cur.close()
-#     final_data = []
-#     for row in results:
-#         final_data.append(dict(zip(row_headers, row)))
-#     print("#######", final_data)
-#     return HttpResponse(json.dumps(final_data))  # json to string
+@csrf_exempt
+@api_view(['POST'])
+def worst10(request):
+    data = json.loads(request.body)
+    brand = data["brand"]
+    category = data["L1"]
+    cur = connection.cursor()
+    query = "call ecomp_intel.worst_10_products('%s','%s');" % (
+        brand, category)
+    cur.execute(query)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def discount_grid(request):
+    data = json.loads(request.body)
+    brand = data["brand"]
+    Oos = data["Oos"]
+    L1 = data["L1"]
+    L2 = data["L2"]
+    L3 = data["L3"]
+    date = data["date"]
+    Llimit = data["Llimit"]
+    Ulimit = data["Ulimit"]
+
+    cur = connection.cursor()
+    query = "call digi1.get_discount_grid('%s','%s','%s','%s','%s','%s','%s','%s');" % (
+        brand, Oos, L1, L2, L3, date, Llimit, Ulimit)
+    cur.execute(query)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def discount_grid_detail(request):
+    data = json.loads(request.body)
+    brand = data["brand"]
+    Oos = data["Oos"]
+    L1 = data["L1"]
+    L2 = data["L2"]
+    L3 = data["L3"]
+    date = data["date"]
+    Llimit = data["Llimit"]
+    Ulimit = data["Ulimit"]
+    discount = data["discount"]
+    comp = data["comp"]
+
+    cur = connection.cursor()
+    query = "call digi1.discount_grid_sku('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');" % (
+        brand, Oos, L1, L2, L3, date, Llimit, Ulimit, discount, comp)
+    cur.execute(query)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+
+    return HttpResponse(json.dumps(json_data, cls=DjangoJSONEncoder))
+
+# LCH Report
+@csrf_exempt
+@api_view(['POST'])
+def populateLCH(request):
+    data = json.loads(request.body)
+    brand = data["brand"]
+    L1 = data["L1"]
+    L2 = data["L2"]
+    L3 = data["L3"]
+    date = data["date"]
+    Llimit = data["Llimit"]
+    Ulimit = data["Ulimit"]
+    udelta = data["udelta"]
+
+    cur = connection.cursor()
+    query = "call digi1.get_lch(%s, %s, %s, %s, %s, %s, %s, %s);"
+    params = (
+        int(udelta), brand, L1, L2, L3, date, int(Llimit), int(Ulimit))
+    # print("query", query)
+    cur.execute(query, params)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+    return Response(json.dumps(json_data))
+
+
+@csrf_exempt
+@api_view(['POST'])
+def populateLCH_Sku(request):
+    data = json.loads(request.body)
+    brand = data["brand"]
+    L1 = data["L1"]
+    L2 = data["L2"]
+    L3 = data["L3"]
+    date = data["date"]
+    Llimit = data["Llimit"]
+    Ulimit = data["Ulimit"]
+    uLCH = data["uLCH"]
+    udelta = data["udelta"]
+
+    cur = connection.cursor()
+    query = "call digi1.get_lch_sku(%s, %s, %s, %s, %s, %s, %s, %s, %s);"
+    params = (
+        int(udelta), brand, L1, L2, L3, date, int(Llimit), int(Ulimit), uLCH)
+    # print("query", query)
+    cur.execute(query, params)
+    result = cur.fetchall()
+    row_headers = [x[0] for x in cur.description]
+    cur.close()
+    json_data = []
+    for row in result:
+        json_data.append(dict(zip(row_headers, row)))
+    return Response(json.dumps(json_data))

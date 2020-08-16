@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import axios from "../../../axios-base";
-import DataTable from "react-data-table-component";
+import DataTable from "../DataTableComponent/DataTableComponent";
 import LinearIndeterminate from "../LinearProgress/LinearProgress";
 import classes from "./PriceHistory.module.css";
-
+import { Button } from "react-bootstrap";
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
 const columns = [
@@ -147,16 +147,10 @@ class PriceHistory extends Component {
     if (this.state.priceHistory) {
       table = (
         <DataTable
-          className={classes.PriceHistory_Table}
           columns={columns}
           data={this.state.priceHistory}
           title="Price History"
-          customStyles={customStyles}
-          pagination
-          progressPending={this.state.pending}
-          progressComponent={<LinearIndeterminate />}
-          persistTableHead
-          responsive
+          pending={this.state.pending}
         />
       );
     }
@@ -170,7 +164,9 @@ class PriceHistory extends Component {
     }
     return (
       <div>
-        <button onClick={this.backHandler}>Back</button>
+        <Button onClick={this.backHandler}>
+          <i class="fas fa-angle-double-left"></i>Back
+        </Button>
         {graph}
         {table}
       </div>
