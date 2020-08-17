@@ -294,16 +294,39 @@ class DiscountGrid extends Component {
             ...this.chartOption,
             xAxis: {
               categories: this.state.data.map((product) => product.discount),
-              crosshair: true,
             },
             series: [
               {
                 data: this.state.data.map((product) => product.digi1_amazon),
                 name: "Digi1",
+                point: {
+                  events: {
+                    click: (e) => {
+                      this.showDGDetail(
+                        e.point.category
+                          .replaceAll("%", "")
+                          .replaceAll(" ", ""),
+                        "digi1_amazon"
+                      );
+                    },
+                  },
+                },
               },
               {
                 data: this.state.data.map((product) => product.amazon),
                 name: "Amazon",
+                point: {
+                  events: {
+                    click: (e) => {
+                      this.showDGDetail(
+                        e.point.category
+                          .replaceAll("%", "")
+                          .replaceAll(" ", ""),
+                        "amazon"
+                      );
+                    },
+                  },
+                },
               },
             ],
           };
@@ -318,16 +341,39 @@ class DiscountGrid extends Component {
             ...this.chartOption,
             xAxis: {
               categories: this.state.data.map((product) => product.discount),
-              crosshair: true,
             },
             series: [
               {
                 data: this.state.data.map((product) => product.digi1_fkt),
                 name: "Digi1",
+                point: {
+                  events: {
+                    click: (e) => {
+                      this.showDGDetail(
+                        e.point.category
+                          .replaceAll("%", "")
+                          .replaceAll(" ", ""),
+                        "digi1_flipkart"
+                      );
+                    },
+                  },
+                },
               },
               {
                 data: this.state.data.map((product) => product.flipkart),
                 name: "Flipkart",
+                point: {
+                  events: {
+                    click: (e) => {
+                      this.showDGDetail(
+                        e.point.category
+                          .replaceAll("%", "")
+                          .replaceAll(" ", ""),
+                        "flipkart"
+                      );
+                    },
+                  },
+                },
               },
             ],
           };
@@ -342,16 +388,39 @@ class DiscountGrid extends Component {
             ...this.chartOption,
             xAxis: {
               categories: this.state.data.map((product) => product.discount),
-              crosshair: true,
             },
             series: [
               {
                 data: this.state.data.map((product) => product.digi1_tatacliq),
                 name: "Digi1",
+                point: {
+                  events: {
+                    click: (e) => {
+                      this.showDGDetail(
+                        e.point.category
+                          .replaceAll("%", "")
+                          .replaceAll(" ", ""),
+                        "digi1_tatacliq"
+                      );
+                    },
+                  },
+                },
               },
               {
                 data: this.state.data.map((product) => product.tatacliq),
                 name: "Tata Cliq",
+                point: {
+                  events: {
+                    click: (e) => {
+                      this.showDGDetail(
+                        e.point.category
+                          .replaceAll("%", "")
+                          .replaceAll(" ", ""),
+                        "tatacliq"
+                      );
+                    },
+                  },
+                },
               },
             ],
           };
@@ -365,16 +434,35 @@ class DiscountGrid extends Component {
           ...this.chartOption,
           xAxis: {
             categories: this.state.data.map((product) => product.discount),
-            crosshair: true,
           },
           series: [
             {
               data: this.state.data.map((product) => product.digi1_paytm),
               name: "Digi1",
+              point: {
+                events: {
+                  click: (e) => {
+                    this.showDGDetail(
+                      e.point.category.replaceAll("%", "").replaceAll(" ", ""),
+                      "digi1_paytm"
+                    );
+                  },
+                },
+              },
             },
             {
               data: this.state.data.map((product) => product.paytm),
-              name: "Amazon",
+              name: "Paytm",
+              point: {
+                events: {
+                  click: (e) => {
+                    this.showDGDetail(
+                      e.point.category.replaceAll("%", "").replaceAll(" ", ""),
+                      "paytm"
+                    );
+                  },
+                },
+              },
             },
           ],
         };
